@@ -1,15 +1,5 @@
-export interface AssetFilters {
-  categoryId?: number;
-  category?: string;
-  departmentId?: number;
-  department?: string;
-  status?: string;
-  search?: string;
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-}
+import { CreateAssetRequest } from "../use-case/asset/CreateAssetUseCase";
+import { AssetAllResponse, AssetFilters } from "../use-case/asset/GetAllAssetUseCase";
 
 export interface PaginatedResult<T> {
   data: T[];
@@ -21,11 +11,7 @@ export interface PaginatedResult<T> {
   };
 }
 
-export interface AssetAllResponse {
-    data: any[];
-    totalItems: number;
-}
-
 export interface IAssetRepository {
-    findAll(filters?: AssetFilters): Promise<AssetAllResponse>;
+  create(input: CreateAssetRequest) : Promise<void>;
+  findAll(filters?: AssetFilters): Promise<AssetAllResponse>;
 }

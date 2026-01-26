@@ -1,12 +1,23 @@
 import { Request, Response } from "express";
-import { AssetFilters } from "../../../application/repository/IAssetRepository";
-import { GetAllAssetsUseCase } from "../../../application/use-case/asset/GetAllAssetUseCase";
+import { AssetFilters, GetAllAssetsUseCase } from "../../../application/use-case/asset/GetAllAssetUseCase";
 import { ResponseUtil } from "../utils/Response";
+import { CreateAssetUseCase } from "../../../application/use-case/asset/CreateAssetUseCase";
 
 export class AssetController {
     constructor(
-        private getAllAssetsUseCase: GetAllAssetsUseCase
+        private getAllAssetsUseCase: GetAllAssetsUseCase,
+        private createAssetUseCase: CreateAssetUseCase
     ) { }
+
+    async create(req: Request, res: Response): Promise<void> {
+        try {
+            const asset = await this.createAssetUseCase.execute(req.body);
+
+            ResponseUtil.created(res, asset, 'Asset created successfully');
+        } catch (error: any) {
+            ResponseUtil.error(res, error.message || 'Failed to create asset', 500);
+        }
+    }
 
     async getAll(req: Request, res: Response): Promise<void> {
         try {
@@ -24,9 +35,7 @@ export class AssetController {
             };
 
             const assets = await this.getAllAssetsUseCase.execute(filters);
-            // const assetList = assets.data?.map((asset: any) => asset.toJSON()) ?? [];
 
-            // ResponseUtil.success(res, assets, 'Assets retrieved successfully');
             ResponseUtil.successWithPagination(res, assets.data, assets.pagination, 'Assets retrieved successfully');
         } catch (error: any) {
             ResponseUtil.error(res, error.message || 'Failed to get assets', 500);

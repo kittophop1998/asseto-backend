@@ -1,4 +1,7 @@
-import { AssetAllResponse, AssetFilters, IAssetRepository } from "../../application/repository/IAssetRepository";
+import dayjs from "dayjs";
+import { IAssetRepository } from "../../application/repository/IAssetRepository";
+import { CreateAssetRequest } from "../../application/use-case/asset/CreateAssetUseCase";
+import { AssetAllResponse, AssetFilters } from "../../application/use-case/asset/GetAllAssetUseCase";
 import { db } from "./maria";
 
 export class AssetRepository implements IAssetRepository {
@@ -12,7 +15,7 @@ export class AssetRepository implements IAssetRepository {
             .innerJoin('categories', 'categories.id', 'assets.category_id')
             .innerJoin('departments', 'departments.id', 'assets.department_id');
 
-        if(filters?.search){
+        if (filters?.search) {
             query = query.where((eb) =>
                 eb.or([
                     eb('code', 'like', `%${filters.search}%`),
@@ -41,5 +44,23 @@ export class AssetRepository implements IAssetRepository {
         const totalItems = totalResult ? Number(totalResult.count) : 0;
 
         return { data, totalItems };
+    }
+
+    async create(input: CreateAssetRequest): Promise<void> {
+        await db
+            .insertInto('assets')
+            .values({
+                code: input.code,
+                name: input.name,
+                category_id: input.categoryId,
+                description: input.description,
+                unit: input.unit,
+                minimum_qty: input.minimumQty,
+                status: input.status,
+                department_id: input.departmentId,
+                created_at: dayjs().toDate(),
+                updated_at: dayjs().toDate(),
+            })
+            .execute();
     }
 }

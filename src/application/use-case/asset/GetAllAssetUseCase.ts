@@ -1,5 +1,23 @@
 import { Asset } from "../../../domain/model/Asset";
-import { AssetFilters, IAssetRepository, PaginatedResult } from "../../repository/IAssetRepository";
+import { IAssetRepository, PaginatedResult } from "../../repository/IAssetRepository";
+
+export interface AssetFilters {
+  categoryId?: number;
+  category?: string;
+  departmentId?: number;
+  department?: string;
+  status?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface AssetAllResponse {
+  data: any[];
+  totalItems: number;
+}
 
 export class GetAllAssetsUseCase {
   constructor(private assetRepository: IAssetRepository) {}
