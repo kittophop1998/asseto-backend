@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import { config } from '../config';
+import { router } from './routes';
 
 export class App {
     private app: Express;
@@ -31,6 +32,9 @@ export class App {
                 timestamp: new Date().toISOString()
             });
         });
+
+        // API routes
+        this.app.use('/api/v1', router);
 
         // 404 handler
         this.app.use((_: Request, res: Response) => {
