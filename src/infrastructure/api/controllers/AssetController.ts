@@ -2,11 +2,13 @@ import { Request, Response } from "express";
 import { AssetFilters, GetAllAssetsUseCase } from "../../../application/use-case/asset/GetAllAssetUseCase";
 import { ResponseUtil } from "../utils/Response";
 import { CreateAssetUseCase } from "../../../application/use-case/asset/CreateAssetUseCase";
+import { GetAssetByIdUseCase } from "../../../application/use-case/asset/GetAssetByIdUseCase";
 
 export class AssetController {
     constructor(
+        private createAssetUseCase: CreateAssetUseCase,
         private getAllAssetsUseCase: GetAllAssetsUseCase,
-        private createAssetUseCase: CreateAssetUseCase
+        private getAssetByIdUseCase: GetAssetByIdUseCase
     ) { }
 
     async create(req: Request, res: Response): Promise<void> {
@@ -39,6 +41,17 @@ export class AssetController {
             ResponseUtil.successWithPagination(res, assets.data, assets.pagination, 'Assets retrieved successfully');
         } catch (error: any) {
             ResponseUtil.error(res, error.message || 'Failed to get assets', 500);
+        }
+    }
+
+    async getById(req: Request, res: Response): Promise<void> {
+        try {
+            const id = Number(req.params.id);
+            const asset = await this.getAssetByIdUseCase.execute(id);
+            
+            ResponseUtil.success(res, asset, 'Asset retrieved successfully');
+        } catch (error: any) {
+            ResponseUtil.error(res, error.message || 'Failed to get asset by id', 500);
         }
     }
 }

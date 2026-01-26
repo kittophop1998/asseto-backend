@@ -7,6 +7,7 @@ export interface Database {
   assets: AssetTable
   categories: CategoryTable
   departments: DepartmentTable
+  asset_items: AssetItemTable
 }
 
 export interface AssetTable {
@@ -14,8 +15,10 @@ export interface AssetTable {
     code: string
     name: string
     category_id: number
-    description?: string
     unit: string
+    description: string
+    total_quantity: number
+    available_quantity: number
     minimum_qty: number
     status: 'ACTIVE' | 'INACTIVE' | 'IN_USE' | 'LOW_STOCK'
     department_id: number
@@ -23,10 +26,21 @@ export interface AssetTable {
     updated_at: Date
 }
 
+export interface AssetItemTable {
+  id: Generated<number>
+  asset_id: number
+  serial_number: string
+  status: 'AVAILABLE' | 'IN_USE' | 'UNDER_MAINTENANCE' | 'RETIRED'
+  purchase_date: Date
+  warranty_end_date: Date
+  created_at: Generated<Date>
+  updated_at: Date
+}
+
 export interface CategoryTable {
   id: Generated<number>
   name: string
-  description?: string
+  description: string
   created_at: Generated<Date>
   updated_at: Date
 }
@@ -43,3 +57,4 @@ export interface DepartmentTable {
 export type Assets = Selectable<AssetTable>
 export type Categories = Selectable<CategoryTable>
 export type Departments = Selectable<DepartmentTable>
+export type AssetItems = Selectable<AssetItemTable>

@@ -26,7 +26,7 @@ export class Asset {
     public readonly name: string,
     public readonly category: string | undefined,
     public readonly categoryId: number,
-    public readonly description: string | undefined,
+    public readonly description: string,
     public readonly unit: string,
     public readonly totalQuantity: number,
     public readonly availableQuantity: number,
