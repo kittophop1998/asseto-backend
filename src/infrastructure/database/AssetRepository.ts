@@ -114,4 +114,24 @@ export class AssetRepository implements IAssetRepository {
             updatedAt: asset.updated_at,
         });
     }
+
+    async update(id: number, input: CreateAssetRequest): Promise<void> {
+        await db
+            .updateTable('assets')
+            .set({
+                code: input.code,
+                name: input.name,
+                category_id: input.categoryId,
+                description: input.description,
+                unit: input.unit,
+                total_quantity: input.totalQuantity,
+                available_quantity: input.availableQuantity,
+                minimum_qty: input.minimumQty,
+                status: input.status,
+                department_id: input.departmentId,
+                updated_at: dayjs().toDate(),
+            })
+            .where('id', '=', id)
+            .execute();
+    }
 }

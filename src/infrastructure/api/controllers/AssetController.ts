@@ -3,12 +3,14 @@ import { AssetFilters, GetAllAssetsUseCase } from "../../../application/use-case
 import { ResponseUtil } from "../utils/Response";
 import { CreateAssetUseCase } from "../../../application/use-case/asset/CreateAssetUseCase";
 import { GetAssetByIdUseCase } from "../../../application/use-case/asset/GetAssetByIdUseCase";
+import { UpdateAssetUseCase } from "../../../application/use-case/asset/UpdateAssetUseCase";
 
 export class AssetController {
     constructor(
         private createAssetUseCase: CreateAssetUseCase,
         private getAllAssetsUseCase: GetAllAssetsUseCase,
-        private getAssetByIdUseCase: GetAssetByIdUseCase
+        private getAssetByIdUseCase: GetAssetByIdUseCase,
+        private updateAssetUseCase: UpdateAssetUseCase
     ) { }
 
     async create(req: Request, res: Response): Promise<void> {
@@ -48,10 +50,21 @@ export class AssetController {
         try {
             const id = Number(req.params.id);
             const asset = await this.getAssetByIdUseCase.execute(id);
-            
+
             ResponseUtil.success(res, asset, 'Asset retrieved successfully');
         } catch (error: any) {
             ResponseUtil.error(res, error.message || 'Failed to get asset by id', 500);
+        }
+    }
+
+    async update(req: Request, res: Response): Promise<void> {
+        try {
+            const id = Number(req.params.id);
+            await this.updateAssetUseCase.execute(id, req.body);
+
+            ResponseUtil.success(res, null, 'Asset updated successfully');
+        } catch (error: any) {
+            ResponseUtil.error(res, error.message || 'Failed to update asset', 500);
         }
     }
 }

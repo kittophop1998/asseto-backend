@@ -16,4 +16,5 @@ export interface IAssetRepository {
   create(input: CreateAssetRequest) : Promise<void>;
   findAll(filters?: AssetFilters): Promise<AssetAllResponse>;
   getById(id: number): Promise<Asset>;
+  update(id: number, input: CreateAssetRequest): Promise<void>;
 }
