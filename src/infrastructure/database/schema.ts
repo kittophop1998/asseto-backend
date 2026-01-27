@@ -9,6 +9,7 @@ export interface Database {
   departments: DepartmentTable
   asset_items: AssetItemTable
   asset_requests: AssetRequestTable
+  asset_returns: AssetReturnTable
 }
 
 export interface AssetTable {
@@ -54,6 +55,16 @@ export interface AssetRequestTable {
   updated_at: Date
 }
 
+export interface AssetReturnTable {
+  id: Generated<number>
+  asset_request_code: string
+  return_date: Date
+  status: 'PENDING' | 'RETURNED'
+  notes: string | null
+  created_at: Generated<Date>
+  updated_at: Date
+}
+
 export interface CategoryTable {
   id: Generated<number>
   name: string
@@ -76,3 +87,4 @@ export type Categories = Selectable<CategoryTable>
 export type Departments = Selectable<DepartmentTable>
 export type AssetItems = Selectable<AssetItemTable>
 export type AssetRequests = Selectable<AssetRequestTable>
+export type AssetReturns = Selectable<AssetReturnTable>
