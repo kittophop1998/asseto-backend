@@ -4,6 +4,7 @@ import { createAssetItemRoutes } from './routers/asset-item.routes';
 import { createMasterDataRoutes } from './routers/master-data.routes';
 import { createAssetRequestRoutes } from './routers/asset-request.routes';
 import { createAssetReturnRoutes } from './routers/asset-return.routes';
+import { createDashboardRoutes } from './routers/dashboard.routes';
 
 export const router = Router();
 
@@ -12,3 +13,4 @@ router.use('/asset-items', createAssetItemRoutes());
 router.use('/master-data', createMasterDataRoutes());
 router.use('/asset-requests', createAssetRequestRoutes());
 router.use('/asset-returns', createAssetReturnRoutes());
+router.use('/dashboard', createDashboardRoutes());

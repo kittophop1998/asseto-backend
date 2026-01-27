@@ -5,4 +5,6 @@ export interface IAssetItemRepository {
     create(input:CreateAssetItemRequest): Promise<void>;
     getAllAssetItems(assetId: number): Promise<AssetItem[]>;
     deleteItem(id: number): Promise<void>;
+    getItemBySerialNumber(serialNumber: string[]): Promise<AssetItem[] | null>;
+    updateStatusByIds(ids: number[], status: string): Promise<void>;   
 }

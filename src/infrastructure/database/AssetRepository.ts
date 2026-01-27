@@ -4,6 +4,7 @@ import { CreateAssetRequest } from "../../application/use-case/asset/CreateAsset
 import { AssetAllResponse, AssetFilters } from "../../application/use-case/asset/GetAllAssetUseCase";
 import { db } from "./maria";
 import { Asset } from "../../domain/model/Asset";
+import { sql } from "kysely";
 
 export class AssetRepository implements IAssetRepository {
     async create(input: CreateAssetRequest): Promise<void> {
@@ -33,6 +34,7 @@ export class AssetRepository implements IAssetRepository {
 
         let query = db
             .selectFrom('assets')
+            .leftJoin('asset_items', 'asset_items.asset_id', 'assets.id')
             .innerJoin('categories', 'categories.id', 'assets.category_id')
             .innerJoin('departments', 'departments.id', 'assets.department_id');
 
@@ -60,7 +62,10 @@ export class AssetRepository implements IAssetRepository {
             'departments.name as department_name',
             'assets.created_at',
             'assets.updated_at',
-        ]).offset(skip).limit(limit).execute();
+            db.fn.count<number>('asset_items.id').as('total_quantity'),
+            sql<string>`SUM(CASE WHEN asset_items.status = 'AVAILABLE' THEN 1 ELSE 0 END)`.as('available_quantity'),
+        ]).groupBy('assets.id').offset(skip).limit(limit).execute();
+
         const totalResult = await db.selectFrom('assets').select(db.fn.count<number>('id').as('count')).executeTakeFirst();
         const totalItems = totalResult ? Number(totalResult.count) : 0;
 

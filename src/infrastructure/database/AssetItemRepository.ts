@@ -10,7 +10,7 @@ export class AssetItemRepository implements IAssetItemRepository {
             .insertInto('asset_items')
             .values({
                 asset_id: input.assetId,
-                serial_number: input.serialNumber,
+                serial_number: input.serialNumber.trim(),
                 status: 'AVAILABLE',
                 purchase_date: dayjs(input.purchaseDate).toDate(),
                 warranty_end_date: dayjs(input.warrantyEnd).toDate(),
@@ -30,7 +30,7 @@ export class AssetItemRepository implements IAssetItemRepository {
         const assetResults = assetItems.map(item => AssetItem.create({
             id: item.id,
             assetId: item.asset_id,
-            serialNumber: item.serial_number,
+            serialNumber: item.serial_number.trim(),
             status: item.status,
             purchaseDate: dayjs(item.purchase_date).toDate(),
             warrantyEnd: dayjs(item.warranty_end_date).toDate(),
@@ -44,6 +44,31 @@ export class AssetItemRepository implements IAssetItemRepository {
         await db
             .deleteFrom('asset_items')
             .where('id', '=', id)
+            .execute();
+    }
+
+    async getItemBySerialNumber(serialNumbers: any): Promise<any> {
+        const assetItems = await db
+            .selectFrom('asset_items')
+            .selectAll()
+            .where('serial_number', 'in', serialNumbers.map((sn: string) => sn.trim()))
+            .execute();
+
+        if (assetItems.length === 0) {
+            return [];
+        }
+
+        return assetItems;
+    }
+
+    async updateStatusByIds(ids: number[], status: string): Promise<void> {
+        await db
+            .updateTable('asset_items')
+            .set({
+                status: status as 'AVAILABLE' | 'IN_USE' | 'UNDER_MAINTENANCE' | 'RETIRED',
+                updated_at: dayjs().toDate(),
+            })
+            .where('id', 'in', ids)
             .execute();
     }
 }

@@ -126,10 +126,39 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .execute()
 
+  // Create asset_request_item table (junction table)
+  await db.schema
+    .createTable('asset_request_item')
+    .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+    .addColumn('asset_request_id', 'integer', (col) => col.notNull())
+    .addColumn('asset_item_id', 'integer', (col) => col.notNull())
+    .addColumn('created_at', 'timestamp', (col) =>
+      col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
+    )
+    .addColumn('updated_at', 'timestamp', (col) =>
+      col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
+    )
+    .addForeignKeyConstraint(
+      'asset_request_item_request_id_fk',
+      ['asset_request_id'],
+      'asset_requests',
+      ['id'],
+      (cb) => cb.onDelete('cascade')
+    )
+    .addForeignKeyConstraint(
+      'asset_request_item_item_id_fk',
+      ['asset_item_id'],
+      'asset_items',
+      ['id'],
+      (cb) => cb.onDelete('cascade')
+    )
+    .execute()
+
   // Create asset_returns table
   await db.schema
     .createTable('asset_returns')
     .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+    .addColumn('code', 'varchar(50)', (col) => col.notNull().unique())
     .addColumn('asset_request_code', 'varchar(50)', (col) => col.notNull())
     .addColumn('return_date', 'date', (col) => col.notNull())
     .addColumn('status', 'varchar(50)', (col) => col.notNull().defaultTo('PENDING'))
@@ -172,11 +201,30 @@ export async function up(db: Kysely<any>): Promise<void> {
     .on('asset_requests')
     .column('department_id')
     .execute()
+
+  await db.schema
+    .createIndex('idx_asset_request_item_request_id')
+    .on('asset_request_item')
+    .column('asset_request_id')
+    .execute()
+
+  await db.schema
+    .createIndex('idx_asset_request_item_item_id')
+    .on('asset_request_item')
+    .column('asset_item_id')
+    .execute()
+
+  await db.schema
+    .createIndex('idx_asset_returns_request_code')
+    .on('asset_returns')
+    .column('asset_request_code')
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
   // Drop tables in reverse order due to foreign key constraints
   await db.schema.dropTable('asset_returns').execute()
+  await db.schema.dropTable('asset_request_item').execute()
   await db.schema.dropTable('asset_requests').execute()
   await db.schema.dropTable('asset_items').execute()
   await db.schema.dropTable('assets').execute()
