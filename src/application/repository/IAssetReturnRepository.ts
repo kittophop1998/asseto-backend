@@ -3,4 +3,5 @@ import { CreateAssetReturnRequest } from "../use-case/asset-return/CreateAssetRe
 export interface IAssetReturnRepository {
     create(input: CreateAssetReturnRequest): Promise<void>;
     getAllAssetReturns(): Promise<any[]>
+    getLastReturnCode(): Promise<string | null>
 }

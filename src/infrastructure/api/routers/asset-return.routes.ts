@@ -29,7 +29,7 @@ export function createAssetReturnRoutes() {
     /**
      * Routes
      */
-    router.get('/', (req, res) => assetReturnController.getAllAssetRequest(req, res));
+    router.get('/', (req, res) => assetReturnController.getAllAssetReturn(req, res));
     router.post('/', (req, res) => assetReturnController.create(req, res));
 
     return router;

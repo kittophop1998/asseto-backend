@@ -57,6 +57,7 @@ export interface AssetRequestTable {
 
 export interface AssetReturnTable {
   id: Generated<number>
+  code: string
   asset_request_code: string
   return_date: Date
   status: 'PENDING' | 'RETURNED'

@@ -19,7 +19,7 @@ export class AssetReturnController {
         }
     }
 
-    async getAllAssetRequest(_: Request, res: Response) {
+    async getAllAssetReturn(_: Request, res: Response) {
         try {
             const assetReturns = await this.getAllAssetReturnUseCase.execute();
 
