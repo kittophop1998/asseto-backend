@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node main.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "migrate": "ts-node src/infrastructure/database/migrate.ts",
+    "seed": "ts-node src/infrastructure/database/seed.ts"
   },
   "keywords": [],
   "author": "",
