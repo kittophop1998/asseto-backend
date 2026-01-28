@@ -1,6 +1,5 @@
 import { Asset } from "../../domain/model/Asset";
-import { CreateAssetRequest } from "../use-case/asset/CreateAssetUseCase";
-import { AssetAllResponse, AssetFilters } from "../use-case/asset/GetAllAssetUseCase";
+import { CreateAssetRequest } from "../services/asset.service";
 
 export interface PaginatedResult<T> {
   data: T[];
@@ -14,7 +13,7 @@ export interface PaginatedResult<T> {
 
 export interface IAssetRepository {
   create(input: CreateAssetRequest) : Promise<void>;
-  findAll(filters?: AssetFilters): Promise<AssetAllResponse>;
+  findAll(filters?: any): Promise<any>;
   getById(id: number): Promise<Asset>;
   update(id: number, input: CreateAssetRequest): Promise<void>;
 }

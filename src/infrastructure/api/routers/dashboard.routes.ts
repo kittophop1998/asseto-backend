@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AssetRequestRepository } from "../../database/AssetRequestRepository";
-import { GetAssetDashboardUseCase } from "../../../application/use-case/dashboard/GetAssetDashboardUseCase";
+import { DashboardService } from "../../../application/services/dashboard.service";
 import { DashboardController } from "../controllers/DashboardController";
 
 export function createDashboardRoutes() {
@@ -12,16 +12,14 @@ export function createDashboardRoutes() {
     const assetRequestRepository = new AssetRequestRepository();
 
     /**
-     * Use Case
+     * Service
      */
-    const getAssetDashboardUseCase = new GetAssetDashboardUseCase(assetRequestRepository);
+    const dashboardService = new DashboardService(assetRequestRepository);
 
     /**
      * Controller
      */
-    const dashboardController = new DashboardController(
-        getAssetDashboardUseCase
-    );
+    const dashboardController = new DashboardController(dashboardService);
 
     /**
      * Routes

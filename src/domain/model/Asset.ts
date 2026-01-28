@@ -1,5 +1,5 @@
 
-export type AssetStatusType = 'ACTIVE' | 'INACTIVE' | 'IN_USE' | 'LOW_STOCK';
+export type AssetStatusType = 'NORMAL' | 'LOW_STOCK';
 
 export interface AssetProps {
   id?: number;
@@ -8,7 +8,6 @@ export interface AssetProps {
   category?: string;
   categoryId: number;
   description: string;
-  unit: string;
   totalQuantity: number;
   availableQuantity: number;
   departmentId: number;
@@ -27,9 +26,6 @@ export class Asset {
     public readonly category: string | undefined,
     public readonly categoryId: number,
     public readonly description: string,
-    public readonly unit: string,
-    public readonly totalQuantity: number,
-    public readonly availableQuantity: number,
     public readonly departmentId: number,
     public readonly departmentName: string | undefined,
     public readonly minimumQty: number,
@@ -46,9 +42,6 @@ export class Asset {
       props.category,
       props.categoryId,
       props.description,
-      props.unit,
-      props.totalQuantity,
-      props.availableQuantity,
       props.departmentId,
       props.departmentName,
       props.minimumQty,
@@ -66,9 +59,6 @@ export class Asset {
       category: this.category,
       categoryId: this.categoryId,
       description: this.description,
-      unit: this.unit,
-      totalQuantity: this.totalQuantity,
-      availableQuantity: this.availableQuantity,
       departmentId: this.departmentId.toString(),
       departmentName: this.departmentName,
       minimumQty: this.minimumQty,

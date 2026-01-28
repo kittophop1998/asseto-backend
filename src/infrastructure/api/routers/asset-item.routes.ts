@@ -1,9 +1,7 @@
 import { Router } from 'express';
 import { AssetItemRepository } from '../../database/AssetItemRepository';
-import { GetAllAssetItemsUseCase } from '../../../application/use-case/asset-item/GetAllAssetItemsUseCase';
+import { AssetItemService } from '../../../application/services/asset-item.service';
 import { AssetItemController } from '../controllers/AssetItemController';
-import { CreateAssetItemUseCase } from '../../../application/use-case/asset-item/CreateAssetItemUseCase';
-import { DeleteAssetItemUseCase } from '../../../application/use-case/asset-item/DeleteAssetItemUseCase';
 
 export function createAssetItemRoutes() {
     const router = Router();
@@ -14,20 +12,14 @@ export function createAssetItemRoutes() {
     const assetItemRepository = new AssetItemRepository();
 
     /**
-     * Use Case
+     * Service
      */
-    const createAssetItemUseCase = new CreateAssetItemUseCase(assetItemRepository);
-    const getAllAssetItemsUseCase = new GetAllAssetItemsUseCase(assetItemRepository);
-    const deleteAssetItemUseCase = new DeleteAssetItemUseCase(assetItemRepository);
+    const assetItemService = new AssetItemService(assetItemRepository);
 
     /**
      * Controller
      */
-    const assetItemController = new AssetItemController(
-        createAssetItemUseCase,
-        getAllAssetItemsUseCase,
-        deleteAssetItemUseCase
-    );
+    const assetItemController = new AssetItemController(assetItemService);
 
     router.post('/', (req, res) => assetItemController.create(req, res));
     router.get('/:assetId', (req, res) => assetItemController.getAllAssetItems(req, res));

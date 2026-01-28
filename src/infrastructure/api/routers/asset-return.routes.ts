@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { AssetReturnRepository } from "../../database/AssetReturnRepository";
-import { GetAllAssetReturnUseCase } from "../../../application/use-case/asset-return/GetAllAssetReturnUseCase";
-import { CreateAssetReturnUseCase } from "../../../application/use-case/asset-return/CreateAssetReturnUseCase";
+import { AssetReturnService } from "../../../application/services/asset-return.service";
 import { AssetReturnController } from "../controllers/AssetReturnController";
 
 export function createAssetReturnRoutes() {
@@ -13,22 +12,21 @@ export function createAssetReturnRoutes() {
     const assetReturnRepository = new AssetReturnRepository();
 
     /**
-     * Use Case
+     * Service
      */
-    const getAllAssetReturnUseCase = new GetAllAssetReturnUseCase(assetReturnRepository);
-    const createAssetReturnUseCase = new CreateAssetReturnUseCase(assetReturnRepository);
+    const assetReturnService = new AssetReturnService(assetReturnRepository);
 
     /**
      * Controller
      */
-    const assetReturnController = new AssetReturnController(
-        createAssetReturnUseCase,
-        getAllAssetReturnUseCase
-    );
+    const assetReturnController = new AssetReturnController(assetReturnService);
 
     /**
      * Routes
      */
+    router.post('/:code/approve', (req, res) => assetReturnController.approveAssetReturnByCode(req, res));
+    router.get('/:code', (req, res) => assetReturnController.getAssetReturnByCode(req, res));
+    router.delete('/:code', (req, res) => assetReturnController.deleteAssetReturnByCode(req, res));
     router.get('/', (req, res) => assetReturnController.getAllAssetReturn(req, res));
     router.post('/', (req, res) => assetReturnController.create(req, res));
 

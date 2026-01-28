@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { MasterDataRepository } from "../../database/MasterDataRepository";
-import { GetMasterDataUseCase } from "../../../application/use-case/master-data/GetMasterDataUseCase";
+import { MasterDataService } from "../../../application/services/master-data.service";
 import { MasterDataController } from "../controllers/MasterDataController";
 
 export function createMasterDataRoutes() {
@@ -12,16 +12,14 @@ export function createMasterDataRoutes() {
     const masterDataRepository = new MasterDataRepository();
 
     /**
-     * Use Case
+     * Service
      */
-    const getMasterDataUseCase = new GetMasterDataUseCase(masterDataRepository);
+    const masterDataService = new MasterDataService(masterDataRepository);
 
     /**
      * Controller
      */
-    const masterDataController = new MasterDataController(
-        getMasterDataUseCase
-    );
+    const masterDataController = new MasterDataController(masterDataService);
 
     /**
      * Routes

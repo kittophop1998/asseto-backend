@@ -1,9 +1,7 @@
 import { Router } from 'express';
 import { AssetRequestRepository } from '../../database/AssetRequestRepository';
-import { GetAllAssetRequestUseCase } from '../../../application/use-case/asset-request/GetAllRequestUseCase';
+import { AssetRequestService } from '../../../application/services/asset-request.service';
 import { AssetRequestController } from '../controllers/AssetRequestController';
-import { CreateAssetRequestUseCase } from '../../../application/use-case/asset-request/CreateAssetRequestUseCase';
-import { ApprovedAssetRequestUseCase } from '../../../application/use-case/asset-request/ApprovedAssetRequestUseCase';
 import { AssetItemRepository } from '../../database/AssetItemRepository';
 
 export function createAssetRequestRoutes() {
@@ -16,25 +14,19 @@ export function createAssetRequestRoutes() {
     const assetItemRepository = new AssetItemRepository();
 
     /**
-     * Use Case
+     * Service
      */
-    const getAllAssetRequestUseCase = new GetAllAssetRequestUseCase(assetRequestRepository);
-    const createAssetRequestUseCase = new CreateAssetRequestUseCase(assetRequestRepository);
-    const approvedAssetRequestUseCase = new ApprovedAssetRequestUseCase(assetRequestRepository, assetItemRepository);
+    const assetRequestService = new AssetRequestService(assetRequestRepository, assetItemRepository);
 
     /**
      * Controller
      */
-    const assetRequestController = new AssetRequestController(
-        getAllAssetRequestUseCase,
-        createAssetRequestUseCase,
-        approvedAssetRequestUseCase
-    );
+    const assetRequestController = new AssetRequestController(assetRequestService);
 
     /**
      * Routes
      */
-    router.put('/:id/approve', (req, res) => assetRequestController.approveRequest(req, res));
+    router.put('/:code/approve', (req, res) => assetRequestController.approveRequest(req, res));
     router.get('/', (req, res) => assetRequestController.getAllRequests(req, res));
     router.post('/', (req, res) => assetRequestController.createAssetRequest(req, res));
 

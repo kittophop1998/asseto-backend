@@ -1,8 +1,7 @@
 import dayjs from "dayjs";
 import { IAssetItemRepository } from "../../application/repository/IAssetItemRepositpry";
-import { CreateAssetItemRequest } from "../../application/use-case/asset-item/CreateAssetItemUseCase";
 import { db } from "./maria";
-import { AssetItem } from "../../domain/model/AssetItem";
+import { CreateAssetItemRequest } from "../../application/services/asset-item.service";
 
 export class AssetItemRepository implements IAssetItemRepository {
     async create(input: CreateAssetItemRequest): Promise<void> {
@@ -10,6 +9,7 @@ export class AssetItemRepository implements IAssetItemRepository {
             .insertInto('asset_items')
             .values({
                 asset_id: input.assetId,
+                asset_code_ac: input.assetCodeAC.trim(),
                 serial_number: input.serialNumber.trim(),
                 status: 'AVAILABLE',
                 purchase_date: dayjs(input.purchaseDate).toDate(),
@@ -20,24 +20,34 @@ export class AssetItemRepository implements IAssetItemRepository {
             .execute();
     }
 
-    async getAllAssetItems(assetId: number): Promise<AssetItem[]> {
+    async getAllAssetItems(assetId: number): Promise<any> {
         const assetItems = await db
             .selectFrom('asset_items')
-            .selectAll()
+            .select([
+                'asset_items.id as assetId',
+                'asset_items.serial_number as serialNumber',
+                'asset_items.asset_code_ac as assetCodeAC',
+                'asset_items.status as status',
+                'asset_items.purchase_date as purchaseDate',
+                'asset_items.warranty_end_date as warrantyEnd',
+                'asset_items.created_at as createdAt',
+                'asset_items.updated_at as updatedAt',
+            ])
             .where('asset_id', '=', assetId)
             .execute();
 
-        const assetResults = assetItems.map(item => AssetItem.create({
-            id: item.id,
-            assetId: item.asset_id,
-            serialNumber: item.serial_number.trim(),
-            status: item.status,
-            purchaseDate: dayjs(item.purchase_date).toDate(),
-            warrantyEnd: dayjs(item.warranty_end_date).toDate(),
-            createdAt: item.created_at ? dayjs(item.created_at).toDate() : undefined,
-            updatedAt: item.updated_at ? dayjs(item.updated_at).toDate() : undefined,
-        }));
-        return assetResults;
+        // const assetResults = assetItems.map(item => AssetItem.create({
+        //     id: item.id,
+        //     assetId: item.asset_id,
+        //     assetCodeAC: item.asset_code_ac.trim(),
+        //     serialNumber: item.serial_number.trim(),
+        //     status: item.status,
+        //     purchaseDate: dayjs(item.purchase_date).toDate(),
+        //     warrantyEnd: dayjs(item.warranty_end_date).toDate(),
+        //     createdAt: item.created_at ? dayjs(item.created_at).toDate() : undefined,
+        //     updatedAt: item.updated_at ? dayjs(item.updated_at).toDate() : undefined,
+        // }));
+        return assetItems;
     }
 
     async deleteItem(id: number): Promise<void> {

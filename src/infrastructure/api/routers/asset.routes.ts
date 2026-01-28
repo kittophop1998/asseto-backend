@@ -1,10 +1,7 @@
 import { Router } from 'express';
 import { AssetRepository } from '../../database/AssetRepository';
-import { GetAllAssetsUseCase } from '../../../application/use-case/asset/GetAllAssetUseCase';
+import { AssetService } from '../../../application/services/asset.service';
 import { AssetController } from '../controllers/AssetController';
-import { CreateAssetUseCase } from '../../../application/use-case/asset/CreateAssetUseCase';
-import { GetAssetByIdUseCase } from '../../../application/use-case/asset/GetAssetByIdUseCase';
-import { UpdateAssetUseCase } from '../../../application/use-case/asset/UpdateAssetUseCase';
 
 export function createAssetRoutes() {
     const router = Router();
@@ -15,22 +12,14 @@ export function createAssetRoutes() {
     const assetRepository = new AssetRepository();
 
     /**
-     * Use Case
+     * Service
      */
-    const createAssetUseCase = new CreateAssetUseCase(assetRepository);
-    const getAllAssetsUseCase = new GetAllAssetsUseCase(assetRepository);
-    const getAssetByIdUseCase = new GetAssetByIdUseCase(assetRepository);
-    const updateAssetUseCase = new UpdateAssetUseCase(assetRepository);
+    const assetService = new AssetService(assetRepository);
 
     /**
      * Controller
      */
-    const assetController = new AssetController(
-        createAssetUseCase,
-        getAllAssetsUseCase,
-        getAssetByIdUseCase,
-        updateAssetUseCase
-    );
+    const assetController = new AssetController(assetService);
 
     router.get('/', (req, res) => assetController.getAll(req, res));
     router.post('/', (req, res) => assetController.create(req, res));

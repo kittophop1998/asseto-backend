@@ -1,11 +1,11 @@
-import { AssetRequestRepository } from "../../../infrastructure/database/AssetRequestRepository";
+import { AssetRequestRepository } from "../../infrastructure/database/AssetRequestRepository";
 
-export class GetAssetDashboardUseCase {
+export class DashboardService {
     constructor(
         private assetRequestRepository: AssetRequestRepository
     ) { }
 
-    async execute(): Promise<any> {
+    async getAssetDashboard(): Promise<any> {
         const assetRequestDashBoard = await this.assetRequestRepository.getListRequestDetail();
         return assetRequestDashBoard;
     }

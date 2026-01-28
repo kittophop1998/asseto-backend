@@ -11,6 +11,7 @@ export interface Database {
   asset_requests: AssetRequestTable
   asset_returns: AssetReturnTable
   asset_request_item: AssetRequestItemTable
+  users: UserTable
 }
 
 export interface AssetTable {
@@ -18,13 +19,10 @@ export interface AssetTable {
   code: string
   name: string
   category_id: number
-  unit: string
-  description: string
-  total_quantity: number
-  available_quantity: number
-  minimum_qty: number
-  status: 'ACTIVE' | 'INACTIVE' | 'IN_USE' | 'LOW_STOCK'
   department_id: number
+  description: string
+  minimum_qty: number
+  status: 'NORMAL' | 'LOW_STOCK'
   created_at: Generated<Date>
   updated_at: Date
 }
@@ -32,6 +30,7 @@ export interface AssetTable {
 export interface AssetItemTable {
   id: Generated<number>
   asset_id: number
+  asset_code_ac: string
   serial_number: string
   status: 'AVAILABLE' | 'IN_USE' | 'UNDER_MAINTENANCE' | 'RETIRED'
   purchase_date: Date
@@ -43,22 +42,20 @@ export interface AssetItemTable {
 export interface AssetRequestTable {
   id: Generated<number>
   code: string
-  asset_id: number
-  requester_id: number
+  serial_number: string
   department_id: number
-  quantity: number
-  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'FULFILLED' | 'CANCELLED'
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED'
+  requester_id: number
   request_date: Date
   approver_id: number | null
   approval_date: Date | null
-  fulfillment_date: Date | null
   created_at: Generated<Date>
   updated_at: Date
 }
 
 export interface AssetRequestItemTable {
   id: Generated<number>
-  asset_request_id: number
+  asset_request_code: string
   asset_item_id: number
   created_at: Generated<Date>
   updated_at: Date
@@ -92,6 +89,15 @@ export interface DepartmentTable {
   updated_at: Date
 }
 
+export interface UserTable {
+  id: Generated<number>
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  department_id: number
+}
+
 export type Assets = Selectable<AssetTable>
 export type Categories = Selectable<CategoryTable>
 export type Departments = Selectable<DepartmentTable>
@@ -99,3 +105,4 @@ export type AssetItems = Selectable<AssetItemTable>
 export type AssetRequests = Selectable<AssetRequestTable>
 export type AssetReturns = Selectable<AssetReturnTable>
 export type AssetRequestItems = Selectable<AssetRequestItemTable>
+export type Users = Selectable<UserTable>

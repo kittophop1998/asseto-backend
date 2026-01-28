@@ -8,15 +8,13 @@ export class AssetRequestRepository implements IAssetRequestRepository {
             .insertInto('asset_requests')
             .values({
                 code: input.code,
-                asset_id: input.assetId ?? 1,
-                requester_id: input.requesterId ?? 1,
+                serial_number: input.serialNumber ?? '',
                 department_id: input.departmentId,
-                quantity: input.quantity ?? 0,
-                status: input.status ?? 'PENDING',
+                status: input.status,
+                requester_id: input.requesterId ?? 1,
                 request_date: dayjs().toDate(),
-                approver_id: input.approverId ?? 1,
+                approver_id: null,
                 approval_date: null,
-                fulfillment_date: null,
                 created_at: dayjs().toDate(),
                 updated_at: dayjs().toDate(),
             })
@@ -29,17 +27,17 @@ export class AssetRequestRepository implements IAssetRequestRepository {
         const requests = await db
             .selectFrom('asset_requests')
             .innerJoin('departments', 'asset_requests.department_id', 'departments.id')
-            .innerJoin('assets', 'asset_requests.asset_id', 'assets.id')
+            .innerJoin('asset_items', 'asset_requests.serial_number', 'asset_items.serial_number')
             .select([
                 'asset_requests.id as requestId',
                 'asset_requests.code as requestCode',
-                'assets.name as assetName',
                 'departments.name as departmentName',
-                'asset_requests.quantity as quantity',
                 'asset_requests.status as status',
                 'asset_requests.request_date as requestDate',
                 'asset_requests.approval_date as approvalDate',
-                'asset_requests.fulfillment_date as fulfillmentDate',
+                'asset_requests.created_at as createdAt',
+                'asset_requests.updated_at as updatedAt',
+                'asset_items.serial_number as serialNumber',
             ])
             .execute();
 
@@ -57,30 +55,33 @@ export class AssetRequestRepository implements IAssetRequestRepository {
         return lastRequest ? lastRequest.code : null;
     }
 
-    async updateStatus(id: number, status: string): Promise<void> {
+    async updateStatus(code: string, status: string): Promise<void> {
         await db
             .updateTable('asset_requests')
             .set({
-                status: status as 'PENDING' | 'APPROVED' | 'REJECTED' | 'FULFILLED' | 'CANCELLED',
+                status: status as 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED',
+                approval_date: dayjs().toDate(),
                 updated_at: dayjs().toDate(),
             })
-            .where('id', '=', id)
+            .where('code', '=', code)
             .execute();
     }
 
-    async updateRequestItem(id: number, assetItemIds: number[]): Promise<void> {
-        const assetRequestId = await db
+    async updateRequestItem(code: string, assetItemIds: number[]): Promise<void> {
+        const assetRequestCode = await db
             .selectFrom('asset_requests')
-            .select('id')
-            .where('id', '=', id)
+            .select('code')
+            .where('code', '=', code)
             .executeTakeFirst();
 
-        if (!assetRequestId) {
-            throw new Error(`Asset request with id ${id} not found`);
+        console.log('Asset Request Code:', assetRequestCode);
+
+        if (!assetRequestCode) {
+            throw new Error(`Asset request with code ${code} not found`);
         }
 
         const values = assetItemIds.map(assetItemId => ({
-            asset_request_id: assetRequestId.id,
+            asset_request_code: assetRequestCode.code,
             asset_item_id: assetItemId,
             created_at: dayjs().toDate(),
             updated_at: dayjs().toDate(),
@@ -97,7 +98,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
     async getListRequestDetail(): Promise<any> {
         const requestDetails = await db
             .selectFrom('asset_requests')
-            .innerJoin('asset_request_item', 'asset_requests.id', 'asset_request_item.asset_request_id')
+            .innerJoin('asset_request_item', 'asset_requests.code', 'asset_request_item.asset_request_code')
             .innerJoin('asset_items', 'asset_request_item.asset_item_id', 'asset_items.id')
             .innerJoin('departments', 'asset_requests.department_id', 'departments.id')
             .select([

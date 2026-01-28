@@ -1,11 +1,11 @@
-import { IMasterDataRepository } from "../../repository/IMasterDataRepository";
+import { IMasterDataRepository } from "../repository/IMasterDataRepository";
 
-export class GetMasterDataUseCase {
+export class MasterDataService {
     constructor(
         private readonly masterDataRepository: IMasterDataRepository
     ) {}
 
-    async execute(): Promise<any> {
+    async getMasterData(): Promise<any> {
         const departments = await this.masterDataRepository.getDepartment();
         const categories = await this.masterDataRepository.getCategory();
         

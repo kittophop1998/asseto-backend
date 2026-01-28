@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
-import { GetAssetDashboardUseCase } from "../../../application/use-case/dashboard/GetAssetDashboardUseCase";
+import { DashboardService } from "../../../application/services/dashboard.service";
 import { ResponseUtil } from "../utils/Response";
 
 export class DashboardController {
     constructor(
-        private getAssetDashboardUseCase: GetAssetDashboardUseCase
+        private dashboardService: DashboardService
     ) {}
 
     async getAssetDashboard(_: Request, res: Response) {
         try {
-            const assetDashboard = await this.getAssetDashboardUseCase.execute();
+            const assetDashboard = await this.dashboardService.getAssetDashboard();
 
             ResponseUtil.success(res, assetDashboard, ' Asset dashboard data retrieved successfully', 200);
         }catch (error: any) {

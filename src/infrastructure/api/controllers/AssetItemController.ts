@@ -1,19 +1,15 @@
 import { Request, Response } from "express";
 import { ResponseUtil } from "../utils/Response";
-import { GetAllAssetItemsUseCase } from "../../../application/use-case/asset-item/GetAllAssetItemsUseCase";
-import { CreateAssetItemUseCase } from "../../../application/use-case/asset-item/CreateAssetItemUseCase";
-import { DeleteAssetItemUseCase } from "../../../application/use-case/asset-item/DeleteAssetItemUseCase";
+import { AssetItemService } from "../../../application/services/asset-item.service";
 
 export class AssetItemController {
     constructor(
-        private createAssetItemUseCase: CreateAssetItemUseCase,
-        private getAllAssetItemsUseCase: GetAllAssetItemsUseCase,
-        private deleteAssetItemUseCase: DeleteAssetItemUseCase
+        private assetItemService: AssetItemService
     ) { }
 
     async create(req: Request, res: Response): Promise<void> {
         try {
-            await this.createAssetItemUseCase.execute(req.body);
+            await this.assetItemService.createAssetItem(req.body);
 
             ResponseUtil.created(res, 'Asset item created successfully');
         } catch (error: any) {
@@ -29,7 +25,7 @@ export class AssetItemController {
                 return;
             }
 
-            const assetItems = await this.getAllAssetItemsUseCase.execute(assetId);
+            const assetItems = await this.assetItemService.getAllAssetItems(assetId);
 
             ResponseUtil.success(res, assetItems, 'Asset items retrieved successfully');
         } catch (error: any) {
@@ -45,7 +41,7 @@ export class AssetItemController {
                 return;
             }
 
-            await this.deleteAssetItemUseCase.execute(id);
+            await this.assetItemService.deleteAssetItem(id);
 
             ResponseUtil.success(res, null, 'Asset item deleted successfully');
         } catch (error: any) {

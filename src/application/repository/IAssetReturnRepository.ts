@@ -2,6 +2,9 @@ import { CreateAssetReturnRequest } from "../use-case/asset-return/CreateAssetRe
 
 export interface IAssetReturnRepository {
     create(input: CreateAssetReturnRequest): Promise<void>;
-    getAllAssetReturns(): Promise<any[]>
-    getLastReturnCode(): Promise<string | null>
+    getAllAssetReturns(): Promise<any[]>;
+    getLastReturnCode(): Promise<string | null>;
+    getAssetReturnByCode(code: string): Promise<any | null>;
+    deleteByCode(code: string): Promise<void>;
+    approveByCode(code: string): Promise<void>;
 }

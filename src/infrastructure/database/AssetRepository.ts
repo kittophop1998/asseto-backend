@@ -1,10 +1,8 @@
 import dayjs from "dayjs";
 import { IAssetRepository } from "../../application/repository/IAssetRepository";
-import { CreateAssetRequest } from "../../application/use-case/asset/CreateAssetUseCase";
-import { AssetAllResponse, AssetFilters } from "../../application/use-case/asset/GetAllAssetUseCase";
 import { db } from "./maria";
-import { Asset } from "../../domain/model/Asset";
 import { sql } from "kysely";
+import { AssetFilters, CreateAssetRequest } from "../../application/services/asset.service";
 
 export class AssetRepository implements IAssetRepository {
     async create(input: CreateAssetRequest): Promise<void> {
@@ -15,9 +13,6 @@ export class AssetRepository implements IAssetRepository {
                 name: input.name,
                 category_id: input.categoryId,
                 description: input.description,
-                unit: input.unit,
-                total_quantity: input.totalQuantity,
-                available_quantity: input.availableQuantity,
                 minimum_qty: input.minimumQty,
                 status: input.status,
                 department_id: input.departmentId,
@@ -27,7 +22,7 @@ export class AssetRepository implements IAssetRepository {
             .execute();
     }
 
-    async findAll(filters?: AssetFilters): Promise<AssetAllResponse> {
+    async findAll(filters?: AssetFilters): Promise<any> {
         const page = filters?.page || 1;
         const limit = filters?.limit || 10;
         const skip = (page - 1) * limit;
@@ -55,7 +50,6 @@ export class AssetRepository implements IAssetRepository {
             'assets.category_id',
             'categories.name as category_name',
             'assets.description',
-            'assets.unit',
             'assets.minimum_qty',
             'assets.status',
             'assets.department_id',
@@ -72,7 +66,7 @@ export class AssetRepository implements IAssetRepository {
         return { data, totalItems };
     }
 
-    async getById(id: number): Promise<Asset> {
+    async getById(id: number): Promise<any> {
         const asset = await db
             .selectFrom('assets')
             .where('assets.id', '=', id)
@@ -85,12 +79,9 @@ export class AssetRepository implements IAssetRepository {
                 'assets.category_id',
                 'categories.name as category_name',
                 'assets.description',
-                'assets.unit',
                 'assets.minimum_qty',
                 'assets.status',
                 'assets.department_id',
-                'assets.total_quantity',
-                'assets.available_quantity',
                 'departments.name as department_name',
                 'assets.created_at',
                 'assets.updated_at',
@@ -98,26 +89,10 @@ export class AssetRepository implements IAssetRepository {
             .executeTakeFirst();
 
         if (!asset) {
-            throw new Error('Asset not found');
+            throw new Error(`Asset with id ${id} not found`);
         }
 
-        return Asset.create({
-            id: asset.id,
-            code: asset.code,
-            name: asset.name,
-            categoryId: asset.category_id,
-            description: asset.description,
-            category: asset.category_name,
-            unit: asset.unit,
-            totalQuantity: asset.total_quantity,
-            availableQuantity: asset.available_quantity,
-            minimumQty: asset.minimum_qty,
-            status: asset.status,
-            departmentId: asset.department_id,
-            departmentName: asset.department_name,
-            createdAt: asset.created_at,
-            updatedAt: asset.updated_at,
-        });
+        return asset;
     }
 
     async update(id: number, input: CreateAssetRequest): Promise<void> {
@@ -128,9 +103,6 @@ export class AssetRepository implements IAssetRepository {
                 name: input.name,
                 category_id: input.categoryId,
                 description: input.description,
-                unit: input.unit,
-                total_quantity: input.totalQuantity,
-                available_quantity: input.availableQuantity,
                 minimum_qty: input.minimumQty,
                 status: input.status,
                 department_id: input.departmentId,

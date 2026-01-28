@@ -1,21 +1,15 @@
 import { Request, Response } from "express";
-import { AssetFilters, GetAllAssetsUseCase } from "../../../application/use-case/asset/GetAllAssetUseCase";
+import { AssetFilters, AssetService } from "../../../application/services/asset.service";
 import { ResponseUtil } from "../utils/Response";
-import { CreateAssetUseCase } from "../../../application/use-case/asset/CreateAssetUseCase";
-import { GetAssetByIdUseCase } from "../../../application/use-case/asset/GetAssetByIdUseCase";
-import { UpdateAssetUseCase } from "../../../application/use-case/asset/UpdateAssetUseCase";
 
 export class AssetController {
     constructor(
-        private createAssetUseCase: CreateAssetUseCase,
-        private getAllAssetsUseCase: GetAllAssetsUseCase,
-        private getAssetByIdUseCase: GetAssetByIdUseCase,
-        private updateAssetUseCase: UpdateAssetUseCase
+        private assetService: AssetService
     ) { }
 
     async create(req: Request, res: Response): Promise<void> {
         try {
-            const asset = await this.createAssetUseCase.execute(req.body);
+            const asset = await this.assetService.createAsset(req.body);
 
             ResponseUtil.created(res, asset, 'Asset created successfully');
         } catch (error: any) {
@@ -38,7 +32,7 @@ export class AssetController {
                 sortOrder: req.query.sortOrder as 'asc' | 'desc' | undefined,
             };
 
-            const assets = await this.getAllAssetsUseCase.execute(filters);
+            const assets = await this.assetService.getAllAssets(filters);
 
             ResponseUtil.successWithPagination(res, assets.data, assets.pagination, 'Assets retrieved successfully');
         } catch (error: any) {
@@ -49,7 +43,7 @@ export class AssetController {
     async getById(req: Request, res: Response): Promise<void> {
         try {
             const id = Number(req.params.id);
-            const asset = await this.getAssetByIdUseCase.execute(id);
+            const asset = await this.assetService.getAssetById(id);
 
             ResponseUtil.success(res, asset, 'Asset retrieved successfully');
         } catch (error: any) {
@@ -60,7 +54,7 @@ export class AssetController {
     async update(req: Request, res: Response): Promise<void> {
         try {
             const id = Number(req.params.id);
-            await this.updateAssetUseCase.execute(id, req.body);
+            await this.assetService.updateAsset(id, req.body);
 
             ResponseUtil.success(res, null, 'Asset updated successfully');
         } catch (error: any) {

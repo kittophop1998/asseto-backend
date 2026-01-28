@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
-import { GetMasterDataUseCase } from "../../../application/use-case/master-data/GetMasterDataUseCase";
+import { MasterDataService } from "../../../application/services/master-data.service";
 import { ResponseUtil } from "../utils/Response";
 
 export class MasterDataController {
     constructor(
-        private getMasterDataUseCase: GetMasterDataUseCase
+        private masterDataService: MasterDataService
     ) { }
 
     async getMasterData(_: Request, res: Response): Promise<void> {
         try {
-            const masterData = await this.getMasterDataUseCase.execute();
+            const masterData = await this.masterDataService.getMasterData();
 
             ResponseUtil.success(res, masterData, ' Master data retrieved successfully', 200);
         } catch (error: any) {
