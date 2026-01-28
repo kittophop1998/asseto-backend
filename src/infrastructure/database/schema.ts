@@ -9,7 +9,7 @@ export interface Database {
   departments: DepartmentTable
   asset_items: AssetItemTable
   asset_requests: AssetRequestTable
-  asset_returns: AssetReturnTable
+  asset_users: AssetUserTable
   asset_request_item: AssetRequestItemTable
   users: UserTable
 }
@@ -44,6 +44,7 @@ export interface AssetRequestTable {
   code: string
   serial_number: string
   department_id: number
+  type: 'REQUEST' | 'RETURN'
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED'
   requester_id: number
   request_date: Date
@@ -61,13 +62,13 @@ export interface AssetRequestItemTable {
   updated_at: Date
 }
 
-export interface AssetReturnTable {
+export interface AssetUserTable {
   id: Generated<number>
-  code: string
-  asset_request_code: string
-  return_date: Date
-  status: 'PENDING' | 'RETURNED'
-  notes: string | null
+  user_id: number
+  department_id: number
+  serial_number: string
+  assigned_date: Date
+  returned_date: Date | null
   created_at: Generated<Date>
   updated_at: Date
 }
@@ -103,6 +104,6 @@ export type Categories = Selectable<CategoryTable>
 export type Departments = Selectable<DepartmentTable>
 export type AssetItems = Selectable<AssetItemTable>
 export type AssetRequests = Selectable<AssetRequestTable>
-export type AssetReturns = Selectable<AssetReturnTable>
+export type AssetUsers = Selectable<AssetUserTable>
 export type AssetRequestItems = Selectable<AssetRequestItemTable>
 export type Users = Selectable<UserTable>

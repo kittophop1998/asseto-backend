@@ -9,7 +9,13 @@ export class AssetRequestController {
 
     async createAssetRequest(req: Request, res: Response) {
         try {
-            await this.assetRequestService.createAssetRequest(req.body);
+            const type = req.query.type?.toString();
+            if (!type) {
+                ResponseUtil.error(res, 'Request type is required', 400);
+                return;
+            }
+
+            await this.assetRequestService.createAssetRequest(req.body, type);
             
             ResponseUtil.created(res, 'Asset request created successfully');
         } catch (error: any) {
@@ -27,6 +33,22 @@ export class AssetRequestController {
         }
     }
 
+    async getMyAssetFormRequest(req: Request, res: Response) {
+        try {
+            const userId = req.user?.id;
+            if(!userId) {
+                ResponseUtil.error(res, 'User not authenticated', 401);
+                return;
+            }
+
+            const myAssets = await this.assetRequestService.getMyAssetFormRequest(userId);
+            
+            ResponseUtil.success(res, myAssets, ' My asset form request retrieved successfully', 200);
+        }catch (error: any) {
+            ResponseUtil.error(res, ' Failed to get my asset form request', 500, error);
+        }
+    }
+
     async approveRequest(req: Request, res: Response) {
         try {
             const code = req.params.code?.toString();
@@ -34,8 +56,14 @@ export class AssetRequestController {
                 ResponseUtil.error(res, 'Request code is required', 400);
                 return;
             }
+
+            const type = req.query.type?.toString();
+            if (!type) {
+                ResponseUtil.error(res, 'Request type is required', 400);
+                return;
+            }
             
-            await this.assetRequestService.approveAssetRequest(code, req.body);
+            await this.assetRequestService.approveAssetRequest(code, type);
 
             ResponseUtil.success(res, null, 'Asset request approved successfully', 200);
         }catch (error: any) {

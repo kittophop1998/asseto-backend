@@ -3,6 +3,7 @@ import { AssetRequestRepository } from '../../database/AssetRequestRepository';
 import { AssetRequestService } from '../../../application/services/asset-request.service';
 import { AssetRequestController } from '../controllers/AssetRequestController';
 import { AssetItemRepository } from '../../database/AssetItemRepository';
+import { authMiddleware } from '../middlewares/authMiddleware';
 
 export function createAssetRequestRoutes() {
     const router = Router();
@@ -26,6 +27,7 @@ export function createAssetRequestRoutes() {
     /**
      * Routes
      */
+    router.get('/my-requests', authMiddleware, (req, res) => assetRequestController.getMyAssetFormRequest(req, res));
     router.put('/:code/approve', (req, res) => assetRequestController.approveRequest(req, res));
     router.get('/', (req, res) => assetRequestController.getAllRequests(req, res));
     router.post('/', (req, res) => assetRequestController.createAssetRequest(req, res));

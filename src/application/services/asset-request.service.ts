@@ -12,14 +12,15 @@ export class AssetRequestService {
         private assetItemRepository: IAssetItemRepository
     ) { }
 
-    async createAssetRequest(data: CreateAssetRequestInput): Promise<any> {
+    async createAssetRequest(data: CreateAssetRequestInput, type: string): Promise<any> {
         const lastCode = await this.assetRequestRepository.getLastRequestCode();
         const code = this.generateAssetRequestCode('AR-', lastCode ? parseInt(lastCode.replace('AR-', '')) : 0);
-        
+
         const input = {
             ...data,
             status: 'PENDING',
-            code: code
+            code: code,
+            type: type
         };
         const request = await this.assetRequestRepository.create(input);
 
@@ -31,29 +32,32 @@ export class AssetRequestService {
         return requests;
     }
 
-    async approveAssetRequest(code: string, requestBody: any): Promise<void> {
-        const serialNumbers = requestBody.serialNumbers.map((item: any) => item);
-        const assetItems = await this.assetItemRepository.getItemBySerialNumber(serialNumbers);
+    async getMyAssetFormRequest(id: number): Promise<any> {
+        const requests = await this.assetRequestRepository.getMyAsset(id);
+        return requests;
+    }
 
-        if (!assetItems || assetItems.length === 0) {
-            throw new Error('No asset items found with the provided serial numbers');
+    async approveAssetRequest(code: string, type: string): Promise<void> {
+        const request = await this.assetRequestRepository.getRequestByCode(code);
+        if (!request) {
+            throw new Error('Asset request not found');
         }
 
-        if (assetItems.length !== serialNumbers.length) {
-            throw new Error('Some serial numbers not found in the system');
+        const assetItem = await this.assetItemRepository.getItemBySerialNumber(request.serial_number);
+        if (!assetItem || !assetItem.id) {
+            throw new Error('Asset item not found');
         }
 
-        // ดึง asset_item_id ทั้งหมด
-        const assetItemIds = assetItems.map((item: any) => item.id);
-
-        // อัปเดตสถานะของ asset items เป็น IN_USE
-        await this.assetItemRepository.updateStatusByIds(assetItemIds, 'IN_USE');
-
-        // บันทึกลงใน asset_request_item table
-        await this.assetRequestRepository.updateRequestItem(code, assetItemIds);
-        
-        // อัปเดตสถานะเป็น APPROVED
-        await this.assetRequestRepository.updateStatus(code, 'APPROVED');
+        if (type === 'REQUEST') {
+            console.log('1');
+            await this.assetRequestRepository.createAssetUser(request.requester_id, request.serial_number, request.department_id);
+            await this.assetItemRepository.updateStatusAfterApproved([assetItem.id], 'IN_USE');
+            await this.assetRequestRepository.updateStatus(code, 'APPROVED');
+        } else if (type === 'RETURN') {
+            await this.assetRequestRepository.updateAssetUserReturnDate(request.requester_id, request.serial_number);
+            await this.assetItemRepository.updateStatusAfterApproved([assetItem.id], 'AVAILABLE');
+            await this.assetRequestRepository.updateStatus(code, 'APPROVED');
+        }
     }
 
     private generateAssetRequestCode(prefix: string, lastNumber: number, length: number = 4): string {

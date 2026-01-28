@@ -57,21 +57,21 @@ export class AssetItemRepository implements IAssetItemRepository {
             .execute();
     }
 
-    async getItemBySerialNumber(serialNumbers: any): Promise<any> {
+    async getItemBySerialNumber(serialNumber: string): Promise<any> {
         const assetItems = await db
             .selectFrom('asset_items')
             .selectAll()
-            .where('serial_number', 'in', serialNumbers.map((sn: string) => sn.trim()))
-            .execute();
+            .where('serial_number', '=', serialNumber.trim())
+            .executeTakeFirst();
 
-        if (assetItems.length === 0) {
-            return [];
+        if (!assetItems) {
+            return null;
         }
 
         return assetItems;
     }
 
-    async updateStatusByIds(ids: number[], status: string): Promise<void> {
+    async updateStatusAfterApproved(ids: number[], status: string): Promise<void> {
         await db
             .updateTable('asset_items')
             .set({
