@@ -114,16 +114,18 @@ export class AssetRequestRepository implements IAssetRequestRepository {
 
     async getListRequestDetail(): Promise<any> {
         const requestDetails = await db
-            .selectFrom('asset_requests')
-            .innerJoin('asset_request_item', 'asset_requests.code', 'asset_request_item.asset_request_code')
-            .innerJoin('asset_items', 'asset_request_item.asset_item_id', 'asset_items.id')
-            .innerJoin('departments', 'asset_requests.department_id', 'departments.id')
+            .selectFrom('asset_users')
+            .innerJoin('departments', 'asset_users.department_id', 'departments.id')
+            .innerJoin('asset_items', 'asset_users.serial_number', 'asset_items.serial_number')
+            .innerJoin('assets', 'asset_items.asset_id', 'assets.id')
+            .innerJoin('users', 'asset_users.user_id', 'users.id')
             .select([
-                'asset_requests.id as requestId',
-                'asset_requests.code as requestCode',
-                'departments.name as departmentName',
+                'assets.name as assetName',
                 'asset_items.serial_number as serialNumber',
-                'asset_requests.status as status',
+                'departments.name as departmentName',
+                'users.full_name as userName',
+                'asset_users.assigned_date as assignedDate',
+                'asset_users.returned_date as returnedDate',
             ])
             .execute();
 
