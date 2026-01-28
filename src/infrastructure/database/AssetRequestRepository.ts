@@ -27,7 +27,8 @@ export class AssetRequestRepository implements IAssetRequestRepository {
         const requests = await db
             .selectFrom('asset_requests')
             .innerJoin('departments', 'asset_requests.department_id', 'departments.id')
-            .innerJoin('asset_items', 'asset_requests.serial_number', 'asset_items.serial_number')
+            .leftJoin('asset_items', 'asset_requests.serial_number', 'asset_items.serial_number')
+            .innerJoin('assets', 'asset_items.asset_id', 'assets.id')
             .select([
                 'asset_requests.id as requestId',
                 'asset_requests.code as requestCode',
@@ -38,7 +39,9 @@ export class AssetRequestRepository implements IAssetRequestRepository {
                 'asset_requests.created_at as createdAt',
                 'asset_requests.updated_at as updatedAt',
                 'asset_items.serial_number as serialNumber',
+                'assets.name as assetName',
             ])
+            .groupBy('asset_requests.id')
             .execute();
 
         return requests;
