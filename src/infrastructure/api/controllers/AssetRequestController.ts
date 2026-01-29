@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AssetRequestService } from "../../../application/services/asset-request.service";
 import { ResponseUtil } from "../utils/Response";
+import { request } from "node:http";
 
 export class AssetRequestController {
     constructor(
@@ -16,12 +17,17 @@ export class AssetRequestController {
             }
 
             const departmentId = Number(req.user?.department_id);
+            const userId = Number(req.user?.id);
+            if(!userId) {
+                ResponseUtil.error(res, 'User not authenticated', 401);
+                return;
+            }
+            
             const input = {
                 serialNumber: req.body.serialNumber,
-                departmentId: departmentId
+                departmentId: departmentId,
+                requesterId: userId
             };
-
-            console.log('Create Asset Request Input:', input);
 
             await this.assetRequestService.createAssetRequest(input, type);
             

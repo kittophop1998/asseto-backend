@@ -4,6 +4,7 @@ import { IAssetRequestRepository } from "../repository/IAssetRequestRepository";
 export interface CreateAssetRequestInput {
     serialNumber: string;
     departmentId: number;
+    requesterId: number;
 }
 
 export class AssetRequestService {
@@ -49,7 +50,6 @@ export class AssetRequestService {
         }
 
         if (type === 'REQUEST') {
-            console.log('1');
             await this.assetRequestRepository.createAssetUser(request.requester_id, request.serial_number, request.department_id);
             await this.assetItemRepository.updateStatusAfterApproved([assetItem.id], 'IN_USE');
             await this.assetRequestRepository.updateStatus(code, 'APPROVED');
