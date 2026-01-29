@@ -12,10 +12,10 @@ export class AssetRepository implements IAssetRepository {
                 code: input.code,
                 name: input.name,
                 category_id: input.categoryId,
+                department_id: input.departmentId,
                 description: input.description,
                 minimum_qty: input.minimumQty,
                 status: input.status,
-                department_id: input.departmentId,
                 created_at: dayjs().toDate(),
                 updated_at: dayjs().toDate(),
             })
