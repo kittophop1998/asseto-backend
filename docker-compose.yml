@@ -1,0 +1,10 @@
+services:
+  backend:
+    image: assetto-backend:latest
+    container_name: assetto-backend
+    restart: always
+    build: .
+    ports:
+      - "127.0.0.1:8083:8083"
+    env_file:
+      - .env
