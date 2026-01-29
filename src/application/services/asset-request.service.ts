@@ -60,6 +60,20 @@ export class AssetRequestService {
         }
     }
 
+    async rejectAssetRequest(code: string): Promise<void> {
+        const request = await this.assetRequestRepository.getRequestByCode(code);
+        if (!request) {
+            throw new Error('Asset request not found');
+        }
+
+        const assetItem = await this.assetItemRepository.getItemBySerialNumber(request.serial_number);
+        if (!assetItem || !assetItem.id) {
+            throw new Error('Asset item not found');
+        }
+        
+        await this.assetRequestRepository.updateStatus(code, 'REJECTED');
+    }
+
     private generateAssetRequestCode(prefix: string, lastNumber: number, length: number = 4): string {
         const nextNumber = lastNumber + 1;
 

@@ -83,4 +83,20 @@ export class AssetRequestController {
             ResponseUtil.error(res, ' Failed to approve asset request', 500, error);
         }
     }
+
+    async rejectRequest(req: Request, res: Response) {
+        try {
+            const code = req.params.code?.toString();
+            if (!code) {
+                ResponseUtil.error(res, 'Request code is required', 400);
+                return;
+            }
+            
+            await this.assetRequestService.rejectAssetRequest(code);
+
+            ResponseUtil.success(res, null, 'Asset request rejected successfully', 200);
+        } catch (error: any) {
+            ResponseUtil.error(res, ' Failed to reject asset request', 500, error);
+        }
+    }
 }
