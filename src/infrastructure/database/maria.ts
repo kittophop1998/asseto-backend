@@ -1,14 +1,15 @@
 import { Kysely, MysqlDialect } from 'kysely';
 import { createPool } from 'mysql2';
 import { Database } from './schema';
+import { config } from "../config";
 
 const configDb = new MysqlDialect({
     pool: createPool({
-        database: 'internal_office',
-        host: 'localhost',
-        user: 'root',
-        password: 'root',
-        port: 3306,
+        database: config.database.name,
+        host: config.database.host,
+        user: config.database.user,
+        password: config.database.password,
+        port: config.database.port,
         connectionLimit: 10,
     })
 });
