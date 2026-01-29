@@ -7,6 +7,7 @@ interface LoginResponse {
     user: {
         name: string;
         department: string;
+        is_approved: boolean;
     };
     accessToken: string;
 }
@@ -22,11 +23,6 @@ export class AuthService {
 
         let user = await this.userRepository.getUserByUserName(usernameTrimmed);
         if (!user) {
-            
-            console.log('User not found locally, attempting ERP login');
-            console.log(`Attempting ERP login for user: ${usernameTrimmed}`);
-            console.log(`Attempting ERP login for user: ${passwordTrimmed}`);
-
             const erpUser = await loginErp(usernameTrimmed, passwordTrimmed);
             if (!erpUser) {
                 throw new Error('Invalid username or password');
@@ -65,6 +61,7 @@ export class AuthService {
         return {
             user: {
                 name: user.full_name,
+                is_approved: user.is_approved,
                 department: user.department_id.toString(),
             },
             accessToken: token,
