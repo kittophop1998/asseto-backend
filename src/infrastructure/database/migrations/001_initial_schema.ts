@@ -30,6 +30,31 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .execute()
 
+  // Create users table
+  await db.schema
+    .createTable('users')
+    .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+    .addColumn('username', 'varchar(100)', (col) => col.notNull().unique())
+    .addColumn('password_hash', 'varchar(255)', (col) => col.notNull())
+    .addColumn('full_name', 'varchar(255)', (col) => col.notNull())
+    .addColumn('email', 'varchar(255)', (col) => col.notNull().unique())
+    .addColumn('department_id', 'integer', (col) => col.notNull())
+    .addColumn('created_at', 'timestamp', (col) =>
+      col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
+    )
+    .addColumn('updated_at', 'timestamp', (col) =>
+      col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
+    )
+    .addColumn('deleted_at', 'timestamp')
+    .addForeignKeyConstraint(
+      'users_department_id_fk',
+      ['department_id'],
+      'departments',
+      ['id'],
+      (cb) => cb.onDelete('restrict')
+    )
+    .execute()
+
   // Create assets table
   await db.schema
     .createTable('assets')
@@ -171,6 +196,44 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .execute()
 
+  // Create asset_users table
+  await db.schema
+    .createTable('asset_users')
+    .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+    .addColumn('user_id', 'integer', (col) => col.notNull())
+    .addColumn('department_id', 'integer', (col) => col.notNull())
+    .addColumn('asset_item_id', 'integer', (col) => col.notNull())
+    .addColumn('assigned_date', 'date', (col) => col.notNull())
+    .addColumn('returned_date', 'date')
+    .addColumn('created_at', 'timestamp', (col) =>
+      col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
+    )
+    .addColumn('updated_at', 'timestamp', (col) =>
+      col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
+    )
+    .addForeignKeyConstraint(
+      'asset_users_user_id_fk',
+      ['user_id'],
+      'users',
+      ['id'],
+      (cb) => cb.onDelete('restrict')
+    )
+    .addForeignKeyConstraint(
+      'asset_users_department_id_fk',
+      ['department_id'],
+      'departments',
+      ['id'],
+      (cb) => cb.onDelete('restrict')
+    )
+    .addForeignKeyConstraint(
+      'asset_users_asset_item_id_fk',
+      ['asset_item_id'],
+      'asset_items',
+      ['id'],
+      (cb) => cb.onDelete('restrict')
+    )
+    .execute()
+
   // Create indexes for better query performance
   await db.schema
     .createIndex('idx_assets_category_id')
@@ -219,15 +282,29 @@ export async function up(db: Kysely<any>): Promise<void> {
     .on('asset_returns')
     .column('asset_request_code')
     .execute()
+
+  await db.schema
+    .createIndex('idx_asset_users_user_id')
+    .on('asset_users')
+    .column('user_id')
+    .execute()
+
+  await db.schema
+    .createIndex('idx_asset_users_asset_item_id')
+    .on('asset_users')
+    .column('asset_item_id')
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
   // Drop tables in reverse order due to foreign key constraints
-  await db.schema.dropTable('asset_returns').execute()
-  await db.schema.dropTable('asset_request_item').execute()
-  await db.schema.dropTable('asset_requests').execute()
-  await db.schema.dropTable('asset_items').execute()
-  await db.schema.dropTable('assets').execute()
-  await db.schema.dropTable('departments').execute()
-  await db.schema.dropTable('categories').execute()
+  await db.schema.dropTable('asset_returns').ifExists().execute()
+  await db.schema.dropTable('asset_users').ifExists().execute()
+  await db.schema.dropTable('asset_request_item').ifExists().execute()
+  await db.schema.dropTable('asset_requests').ifExists().execute()
+  await db.schema.dropTable('asset_items').ifExists().execute()
+  await db.schema.dropTable('assets').ifExists().execute()
+  await db.schema.dropTable('users').ifExists().execute()
+  await db.schema.dropTable('departments').ifExists().execute()
+  await db.schema.dropTable('categories').ifExists().execute()
 }

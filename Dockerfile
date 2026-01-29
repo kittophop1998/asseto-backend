@@ -1,21 +1,20 @@
-# Build stage
+# Build stage (optional - for type checking and validation)
 FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files first (better caching)
 COPY package*.json ./
 
-# Install all dependencies
+# Install all dependencies (including devDependencies for type checking)
 RUN npm ci
 
-# Copy prisma schema and generate client
-COPY prisma ./prisma
-RUN npx prisma generate
-
-# Copy source code last (changes most frequently)
+# Copy source code
 COPY tsconfig.json ./
 COPY src ./src
 COPY main.ts ./
+
+# Optional: Type check (uncomment if you want to validate types during build)
+# RUN npm run build
 
 # Production stage
 FROM node:20-alpine
@@ -24,20 +23,16 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install production dependencies only
-RUN npm ci --omit=dev
+# Install production dependencies + tsx (needed to run TypeScript)
+RUN npm ci --omit=dev && npm install tsx
 
-# Copy prisma schema
-COPY prisma ./prisma
-
-# Copy generated prisma client and source from builder
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/tsconfig.json ./
-COPY --from=builder /app/src ./src
-COPY --from=builder /app/main.ts ./
+# Copy source code
+COPY tsconfig.json ./
+COPY src ./src
+COPY main.ts ./
 
 # Expose port
 EXPOSE 8083
 
+# Run the application with tsx
 CMD ["npx", "tsx", "main.ts"]
