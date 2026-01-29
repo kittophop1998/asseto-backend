@@ -11,6 +11,6 @@ export const config = {
         password: process.env.DB_PASSWORD || 'Q4NkdE-xszWlcXODWck13eWOYb_2I45v',
     },
     setting: {
-        allowOrigin: process.env.ALLOW_ORIGIN || 'http://localhost:3000',
+        allowOrigin: process.env.ALLOW_ORIGIN || 'https://assetto.up.railway.app',
     },
 };

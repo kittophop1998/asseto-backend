@@ -16,7 +16,6 @@ async function migrate() {
   const command = process.argv[2]
 
   if (command === 'down') {
-    // Rollback last migration
     const { error, results } = await migrator.migrateDown()
 
     if (error) {

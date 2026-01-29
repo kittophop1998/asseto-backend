@@ -50,6 +50,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('full_name', 'varchar(255)', (col) => col.notNull())
     .addColumn('email', 'varchar(255)', (col) => col.notNull().unique())
     .addColumn('department_id', 'integer', (col) => col.notNull())
+    .addColumn('is_approved', 'boolean', (col) => col.notNull().defaultTo(false))
+    .addColumn('role', 'varchar(50)', (col) => col.notNull().defaultTo('STAFF')) // ADMIN, STAFF, MANAGER
     .addColumn('created_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
     )
@@ -76,7 +78,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('department_id', 'integer', (col) => col.notNull())
     .addColumn('description', 'text', (col) => col.notNull())
     .addColumn('minimum_qty', 'integer', (col) => col.notNull().defaultTo(0))
-    .addColumn('status', 'varchar(50)', (col) => col.notNull().defaultTo('NORMAL')) // NORMAL or LOW_STOCK
+    .addColumn('status', 'varchar(50)', (col) => col.notNull().defaultTo('NORMAL'))
     .addColumn('created_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
     )

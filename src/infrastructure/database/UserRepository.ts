@@ -57,6 +57,8 @@ export class UserRepository {
                 'users.full_name',
                 'users.email',
                 'users.department_id',
+                'users.is_approved',
+                'users.role',
                 'departments.name as department_name'
             ])
             .where('users.id', '=', id)

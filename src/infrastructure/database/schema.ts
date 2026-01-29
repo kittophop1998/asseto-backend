@@ -97,6 +97,8 @@ export interface UserTable {
   full_name: string
   email: string
   department_id: number
+  is_approved: boolean
+  role: 'ADMIN' | 'STAFF' | 'MANAGER'
   created_at: Generated<Date>
   updated_at: Date
   deleted_at: Date | null
