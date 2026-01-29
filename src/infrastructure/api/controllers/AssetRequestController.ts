@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { AssetRequestService } from "../../../application/services/asset-request.service";
 import { ResponseUtil } from "../utils/Response";
-import { request } from "node:http";
 
 export class AssetRequestController {
     constructor(
