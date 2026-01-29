@@ -97,6 +97,9 @@ export interface UserTable {
   full_name: string
   email: string
   department_id: number
+  created_at: Generated<Date>
+  updated_at: Date
+  deleted_at: Date | null
 }
 
 export type Assets = Selectable<AssetTable>

@@ -60,7 +60,19 @@ export class AssetItemRepository implements IAssetItemRepository {
     async getItemBySerialNumber(serialNumber: string): Promise<any> {
         const assetItems = await db
             .selectFrom('asset_items')
-            .selectAll()
+            .innerJoin('assets', 'asset_items.asset_id', 'assets.id')
+            .select([
+                'asset_items.id as id',
+                'asset_items.asset_id as assetId',
+                'assets.name as assetName',
+                'asset_items.asset_code_ac as assetCodeAC',
+                'asset_items.serial_number as serialNumber',
+                'asset_items.status as status',
+                'asset_items.purchase_date as purchaseDate',
+                'asset_items.warranty_end_date as warrantyEnd',
+                'asset_items.created_at as createdAt',
+                'asset_items.updated_at as updatedAt',
+            ])
             .where('serial_number', '=', serialNumber.trim())
             .executeTakeFirst();
 

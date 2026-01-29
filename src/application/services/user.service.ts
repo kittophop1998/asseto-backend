@@ -9,4 +9,12 @@ export class UserService {
         const users = await this.userRepository.getAllUsers();
         return users;
     }
+
+    async update(id: number, input: any): Promise<void> {
+        await this.userRepository.update(id, input);
+    }
+
+    async getProfile(id: number): Promise<any> {
+        return this.userRepository.getById(id);
+    }
 }

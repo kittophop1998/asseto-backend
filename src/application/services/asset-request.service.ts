@@ -3,7 +3,7 @@ import { IAssetRequestRepository } from "../repository/IAssetRequestRepository";
 
 export interface CreateAssetRequestInput {
     serialNumber: string;
-    departmentId: string;
+    departmentId: number;
 }
 
 export class AssetRequestService {

@@ -22,6 +22,7 @@ export function createAssetItemRoutes() {
     const assetItemController = new AssetItemController(assetItemService);
 
     router.post('/', (req, res) => assetItemController.create(req, res));
+    router.get('/serial-number/:serialNumber', (req, res) => assetItemController.getAssetItemBySerialNumber(req, res));
     router.get('/:assetId', (req, res) => assetItemController.getAllAssetItems(req, res));
     router.delete('/:id', (req, res) => assetItemController.delete(req, res));
 

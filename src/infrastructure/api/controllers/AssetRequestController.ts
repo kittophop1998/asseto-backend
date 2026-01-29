@@ -15,7 +15,15 @@ export class AssetRequestController {
                 return;
             }
 
-            await this.assetRequestService.createAssetRequest(req.body, type);
+            const departmentId = Number(req.user?.department_id);
+            const input = {
+                serialNumber: req.body.serialNumber,
+                departmentId: departmentId
+            };
+
+            console.log('Create Asset Request Input:', input);
+
+            await this.assetRequestService.createAssetRequest(input, type);
             
             ResponseUtil.created(res, 'Asset request created successfully');
         } catch (error: any) {
