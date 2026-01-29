@@ -15,7 +15,7 @@ export class AssetRepository implements IAssetRepository {
                 department_id: input.departmentId,
                 description: input.description,
                 minimum_qty: input.minimumQty,
-                status: input.status,
+                status: 'NORMAL',
                 created_at: dayjs().toDate(),
                 updated_at: dayjs().toDate(),
             })
@@ -104,7 +104,7 @@ export class AssetRepository implements IAssetRepository {
                 category_id: input.categoryId,
                 description: input.description,
                 minimum_qty: input.minimumQty,
-                status: input.status,
+                status: 'NORMAL',
                 department_id: input.departmentId,
                 updated_at: dayjs().toDate(),
             })

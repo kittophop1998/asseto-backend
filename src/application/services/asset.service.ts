@@ -20,7 +20,6 @@ export interface CreateAssetRequest {
   categoryId: number;
   description: string;
   minimumQty: number;
-  status: AssetStatusType;
   departmentId: number;
 }
 
