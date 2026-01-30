@@ -2,9 +2,11 @@ import dayjs from "dayjs";
 import { IAssetItemRepository } from "../../application/repository/IAssetItemRepositpry";
 import { db } from "./maria";
 import { CreateAssetItemRequest } from "../../application/services/asset-item.service";
+import { sql } from "kysely";
 
 export class AssetItemRepository implements IAssetItemRepository {
     async create(input: CreateAssetItemRequest): Promise<void> {
+        console.log('Creating asset item with input:', input);
         await db
             .insertInto('asset_items')
             .values({
@@ -28,10 +30,10 @@ export class AssetItemRepository implements IAssetItemRepository {
                 'asset_items.serial_number as serialNumber',
                 'asset_items.asset_code_ac as assetCodeAC',
                 'asset_items.status as status',
-                'asset_items.purchase_date as purchaseDate',
-                'asset_items.warranty_end_date as warrantyEnd',
-                'asset_items.created_at as createdAt',
-                'asset_items.updated_at as updatedAt',
+                sql`DATE_FORMAT(CONVERT_TZ(asset_items.purchase_date,'+00:00','+07:00'), '%Y-%m-%d')`.as('purchaseDate'),
+                sql`DATE_FORMAT(CONVERT_TZ(asset_items.warranty_end_date,'+00:00','+07:00'), '%Y-%m-%d')`.as('warrantyEnd'),
+                sql`DATE_FORMAT(CONVERT_TZ(asset_items.created_at,'+00:00','+07:00'), '%Y-%m-%d %H:%i:%s')`.as('createdAt'),
+                sql`DATE_FORMAT(CONVERT_TZ(asset_items.updated_at,'+00:00','+07:00'), '%Y-%m-%d %H:%i:%s')`.as('updatedAt'),
             ])
             .where('asset_id', '=', assetId)
             .execute();

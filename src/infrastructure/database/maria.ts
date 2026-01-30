@@ -11,6 +11,7 @@ const configDb = new MysqlDialect({
         password: config.database.password,
         port: config.database.port,
         connectionLimit: 10,
+        timezone: '+07:00',
     })
 });
 

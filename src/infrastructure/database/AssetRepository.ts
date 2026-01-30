@@ -35,13 +35,10 @@ export class AssetRepository implements IAssetRepository {
             .where('assets.deleted_at', 'is', null);
 
         if (filters?.search) {
-            query = query.where((eb) =>
-                eb.or([
-                    eb('code', 'like', `%${filters.search}%`),
-                    eb('name', 'like', `%${filters.search}%`),
-                    eb('description', 'like', `%${filters.search}%`),
-                ])
-            );
+            query = query.where((eb) => eb.or([
+                eb('assets.code', 'like', `%${filters.search}%`),
+                eb('assets.name', 'like', `%${filters.search}%`),
+            ]))
         }
 
         const data = await query.select([
