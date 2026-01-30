@@ -59,13 +59,6 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
     )
     .addColumn('deleted_at', 'timestamp')
-    .addForeignKeyConstraint(
-      'users_department_id_fk',
-      ['department_id'],
-      'departments',
-      ['id'],
-      (cb) => cb.onDelete('restrict')
-    )
     .execute()
 
   // Create assets table
@@ -86,20 +79,6 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
     )
     .addColumn('deleted_at', 'timestamp')
-    .addForeignKeyConstraint(
-      'assets_category_id_fk',
-      ['category_id'],
-      'categories',
-      ['id'],
-      (cb) => cb.onDelete('restrict')
-    )
-    .addForeignKeyConstraint(
-      'assets_department_id_fk',
-      ['department_id'],
-      'departments',
-      ['id'],
-      (cb) => cb.onDelete('restrict')
-    )
     .execute()
 
   // Create asset_items table
@@ -117,13 +96,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn('updated_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
-    )
-    .addForeignKeyConstraint(
-      'asset_items_asset_id_fk',
-      ['asset_id'],
-      'assets',
-      ['id'],
-      (cb) => cb.onDelete('cascade')
     )
     .execute()
 
@@ -146,48 +118,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('updated_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
     )
-    .addForeignKeyConstraint(
-      'asset_requests_department_id_fk',
-      ['department_id'],
-      'departments',
-      ['id'],
-      (cb) => cb.onDelete('restrict')
-    )
-    .addForeignKeyConstraint(
-      'asset_requests_requester_id_fk',
-      ['requester_id'],
-      'users',
-      ['id'],
-      (cb) => cb.onDelete('restrict')
-    )
-    .addForeignKeyConstraint(
-      'asset_requests_approver_id_fk',
-      ['approver_id'],
-      'users',
-      ['id'],
-      (cb) => cb.onDelete('restrict')
-    )
-    .execute()
-
-  // Create asset_request_item table (junction table)
-  await db.schema
-    .createTable('asset_request_item')
-    .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
-    .addColumn('asset_request_code', 'varchar(50)', (col) => col.notNull())
-    .addColumn('asset_item_id', 'integer', (col) => col.notNull())
-    .addColumn('created_at', 'timestamp', (col) =>
-      col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
-    )
-    .addColumn('updated_at', 'timestamp', (col) =>
-      col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
-    )
-    .addForeignKeyConstraint(
-      'asset_request_item_item_id_fk',
-      ['asset_item_id'],
-      'asset_items',
-      ['id'],
-      (cb) => cb.onDelete('cascade')
-    )
     .execute()
 
   // Create asset_users table
@@ -205,20 +135,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn('updated_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
-    )
-    .addForeignKeyConstraint(
-      'asset_users_user_id_fk',
-      ['user_id'],
-      'users',
-      ['id'],
-      (cb) => cb.onDelete('restrict')
-    )
-    .addForeignKeyConstraint(
-      'asset_users_department_id_fk',
-      ['department_id'],
-      'departments',
-      ['id'],
-      (cb) => cb.onDelete('restrict')
     )
     .execute()
 
@@ -308,10 +224,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 }
 
-export async function down(db: Kysely<any>): Promise<void> {
-  // Drop tables in reverse order due to foreign key constraints
+  export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable('asset_users').ifExists().execute()
-  await db.schema.dropTable('asset_request_item').ifExists().execute()
   await db.schema.dropTable('asset_requests').ifExists().execute()
   await db.schema.dropTable('asset_items').ifExists().execute()
   await db.schema.dropTable('assets').ifExists().execute()
