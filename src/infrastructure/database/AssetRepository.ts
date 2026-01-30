@@ -30,8 +30,8 @@ export class AssetRepository implements IAssetRepository {
         let query = db
             .selectFrom('assets')
             .leftJoin('asset_items', 'asset_items.asset_id', 'assets.id')
-            .innerJoin('categories', 'categories.id', 'assets.category_id')
-            .innerJoin('departments', 'departments.id', 'assets.department_id')
+            .leftJoin('categories', 'categories.id', 'assets.category_id')
+            .leftJoin('departments', 'departments.id', 'assets.department_id')
             .where('assets.deleted_at', 'is', null);
 
         if (filters?.search) {
