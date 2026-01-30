@@ -99,4 +99,36 @@ export class AssetRequestController {
             ResponseUtil.error(res, ' Failed to reject asset request', 500, error);
         }
     }
+
+    async returnAssetByUserId(req: Request, res: Response) {
+        try {
+            const assetUserId = Number(req.query.id);
+            if (!assetUserId) {
+                ResponseUtil.error(res, 'Request code is required', 400);
+                return;
+            }
+
+            await this.assetRequestService.processReturn(assetUserId);
+
+            // ##### Flow Create Request ##### 
+            const type = req.query.type?.toString().toLocaleUpperCase();
+            if (!type) {
+                ResponseUtil.error(res, 'Request type is required', 400);
+                return;
+            }
+
+            const input = {
+                serialNumber: req.body.serialNumber ?? '',
+                departmentId: Number(req.user?.department_id) ?? 0,
+                requesterId: Number(req.user?.id) ?? 0
+            };
+
+            await this.assetRequestService.createAssetRequest(input, type);
+            // ##### End Flow Create Request #####
+
+            ResponseUtil.success(res, null, 'Asset return processed successfully', 200);
+        }catch (error: any) {
+            ResponseUtil.error(res, ' Failed to process asset return', 500, error);
+        }
+    }
 }

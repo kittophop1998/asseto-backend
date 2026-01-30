@@ -21,11 +21,24 @@ export class AssetRequestService {
             ...data,
             status: 'PENDING',
             code: code,
-            type: type
+            type: type.toLocaleUpperCase()
         };
         const request = await this.assetRequestRepository.create(input);
+        
+        if (type === 'REQUEST') {
+            await this.assetRequestRepository.createAssetUser(
+                data.requesterId,
+                data.serialNumber,
+                data.departmentId,
+                'PENDING'
+            );
+        }
 
         return request;
+    }
+
+    async processReturn(assetUserId: number): Promise<void> {
+        await this.assetRequestRepository.updateAssetUserById(assetUserId, 'PENDING_RETURN');
     }
 
     async getAllAssetRequests(): Promise<any> {
@@ -50,12 +63,14 @@ export class AssetRequestService {
         }
 
         if (type === 'REQUEST') {
-            await this.assetRequestRepository.createAssetUser(request.requester_id, request.serial_number, request.department_id);
-            await this.assetItemRepository.updateStatusAfterApproved([assetItem.id], 'IN_USE');
+            await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.serial_number, 'APPROVED');
+            await this.assetItemRepository.updateAssetItem(assetItem.id, 'IN_USE');
+            await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.serial_number, 'APPROVED');
             await this.assetRequestRepository.updateStatus(code, 'APPROVED');
         } else if (type === 'RETURN') {
             await this.assetRequestRepository.updateAssetUserReturnDate(request.requester_id, request.serial_number);
-            await this.assetItemRepository.updateStatusAfterApproved([assetItem.id], 'AVAILABLE');
+            await this.assetItemRepository.updateAssetItem(assetItem.id, 'AVAILABLE');
+            await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.serial_number, 'RETURNED');
             await this.assetRequestRepository.updateStatus(code, 'APPROVED');
         }
     }

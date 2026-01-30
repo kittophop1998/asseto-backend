@@ -30,6 +30,11 @@ export class AssetRequestRepository implements IAssetRequestRepository {
             .innerJoin('departments', 'asset_requests.department_id', 'departments.id')
             .leftJoin('asset_items', 'asset_requests.serial_number', 'asset_items.serial_number')
             .innerJoin('assets', 'asset_items.asset_id', 'assets.id')
+            .leftJoin('asset_users', (join) => join
+                .onRef('asset_users.serial_number', '=', 'asset_requests.serial_number')
+                .onRef('asset_users.user_id', '=', 'asset_requests.requester_id')
+                .on('asset_users.returned_date', 'is', null)
+            )
 
         if (id) {
             query = query.where('asset_requests.requester_id', '=', id);
@@ -54,6 +59,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
                 'asset_requests.updated_at as updatedAt',
                 'asset_items.serial_number as serialNumber',
                 'assets.name as assetName',
+                'asset_users.status as assetUserStatus',
             ])
             .execute();
 
@@ -142,18 +148,37 @@ export class AssetRequestRepository implements IAssetRequestRepository {
         return request;
     }
 
-    async createAssetUser(userId: number, serialNumber: string, departmentId: number) : Promise<void> {
+    async createAssetUser(
+        userId: number, 
+        serialNumber: string, 
+        departmentId: number,
+        status: string
+    ) : Promise<void> {
         await db
             .insertInto('asset_users')
             .values({
                 user_id: userId,
                 serial_number: serialNumber,
                 department_id: departmentId,
+                status: status,
                 assigned_date: dayjs().toDate(),
                 returned_date: null,
                 created_at: dayjs().toDate(),
                 updated_at: dayjs().toDate(),
             })
+            .execute();
+    }
+
+    async updateAssetUserStatus(userId: number, serialNumber: string, status: string): Promise<void> {
+        await db
+            .updateTable('asset_users')
+            .set({
+                status: status,
+                updated_at: dayjs().toDate(),
+            })
+            .where('user_id', '=', userId)
+            .where('serial_number', '=', serialNumber)
+            .where('returned_date', 'is', null)
             .execute();
     }
 
@@ -180,11 +205,23 @@ export class AssetRequestRepository implements IAssetRequestRepository {
                 'asset_users.department_id as departmentId',
                 'asset_users.assigned_date as assignedDate',
                 'asset_users.returned_date as returnedDate',
+                'asset_users.status as status',
             ])
             .where('user_id', '=', id)
             .where('returned_date', 'is', null)
             .execute();
 
         return assets;
+    }
+
+    async updateAssetUserById(id: number, status: string): Promise<void> {
+        await db
+            .updateTable('asset_users')
+            .set({
+                status: status,
+                updated_at: dayjs().toDate(),
+            })
+            .where('id', '=', id)
+            .execute();
     }
 }

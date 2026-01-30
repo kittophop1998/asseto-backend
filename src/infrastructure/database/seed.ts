@@ -10,28 +10,13 @@ async function seed() {
       .insertInto('categories')
       .values([
         {
-          name: 'อุปกรณ์คอมพิวเตอร์',
+          name: 'อุปกรณ์ไอที',
           description: 'อุปกรณ์คอมพิวเตอร์และอุปกรณ์ประกอบ เช่น เมาส์ คีย์บอร์ด จอภาพ',
           updated_at: new Date(),
         },
         {
-          name: 'เครื่องใช้สำนักงาน',
-          description: 'อุปกรณ์สำนักงานทั่วไป เช่น เครื่องพิมพ์ โทรศัพท์ เครื่องแฟกซ์',
-          updated_at: new Date(),
-        },
-        {
-          name: 'เฟอร์นิเจอร์',
-          description: 'โต๊ะ เก้าอี้ ตู้เก็บเอกสาร และเฟอร์นิเจอร์สำนักงาน',
-          updated_at: new Date(),
-        },
-        {
-          name: 'อุปกรณ์เครือข่าย',
-          description: 'อุปกรณ์เชื่อมต่อเครือข่าย เช่น Router Switch Access Point',
-          updated_at: new Date(),
-        },
-        {
-          name: 'เครื่องใช้ไฟฟ้า',
-          description: 'เครื่องปรับอากาศ พัดลม ตู้เย็น และเครื่องใช้ไฟฟ้าอื่นๆ',
+          name: 'ซอฟต์แวร์',
+          description: 'โปรแกรมและแอปพลิเคชันต่างๆ ที่ใช้ในองค์กร',
           updated_at: new Date(),
         },
       ])

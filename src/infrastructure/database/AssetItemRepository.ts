@@ -83,14 +83,14 @@ export class AssetItemRepository implements IAssetItemRepository {
         return assetItems;
     }
 
-    async updateStatusAfterApproved(ids: number[], status: string): Promise<void> {
+    async updateAssetItem(id: number, status: string): Promise<void> {
         await db
             .updateTable('asset_items')
             .set({
-                status: status as 'AVAILABLE' | 'IN_USE' | 'UNDER_MAINTENANCE' | 'RETIRED',
+                status: status as 'AVAILABLE' | 'IN_USE',
                 updated_at: dayjs().toDate(),
             })
-            .where('id', 'in', ids)
+            .where('id', '=', id)
             .execute();
     }
 }

@@ -68,6 +68,7 @@ export interface AssetUserTable {
   user_id: number
   department_id: number
   serial_number: string
+  status: string
   assigned_date: Date
   returned_date: Date | null
   created_at: Generated<Date>

@@ -6,5 +6,5 @@ export interface IAssetItemRepository {
     getAllAssetItems(assetId: number): Promise<AssetItem[]>;
     deleteItem(id: number): Promise<void>;
     getItemBySerialNumber(serialNumber: string): Promise<AssetItem | null>;
-    updateStatusAfterApproved(ids: number[], status: string): Promise<void>;   
+    updateAssetItem(id: number, status: string): Promise<void>;
 }
