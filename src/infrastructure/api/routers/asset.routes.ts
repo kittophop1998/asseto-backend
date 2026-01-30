@@ -25,6 +25,7 @@ export function createAssetRoutes() {
     router.post('/', (req, res) => assetController.create(req, res));
     router.get('/:id', (req, res) => assetController.getById(req, res));
     router.put('/:id', (req, res) => assetController.update(req, res));
+    router.delete('/:id', (req, res) => assetController.delete(req, res));
 
     return router;
 }

@@ -111,4 +111,14 @@ export class AssetRepository implements IAssetRepository {
             .where('id', '=', id)
             .execute();
     }
+
+    async delete(id: number): Promise<void> {
+        await db
+            .updateTable('assets')
+            .set({
+                deleted_at: dayjs().toDate(),
+            })
+            .where('id', '=', id)
+            .execute();
+    }
 }

@@ -1,4 +1,4 @@
-import { Asset, AssetStatusType } from "../../domain/model/Asset";
+import { Asset } from "../../domain/model/Asset";
 import { IAssetRepository, PaginatedResult } from "../repository/IAssetRepository";
 
 export interface AssetFilters {
@@ -53,5 +53,9 @@ export class AssetService {
 
   async updateAsset(id: number, input: CreateAssetRequest): Promise<void> {
     await this.assetRepository.update(id, input);
+  }
+
+  async deleteAsset(id: number): Promise<void> {
+    await this.assetRepository.delete(id);
   }
 }

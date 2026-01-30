@@ -25,6 +25,7 @@ export interface AssetTable {
   status: 'NORMAL' | 'LOW_STOCK'
   created_at: Generated<Date>
   updated_at: Date
+  deleted_at: Date | null
 }
 
 export interface AssetItemTable {

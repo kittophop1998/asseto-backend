@@ -61,4 +61,15 @@ export class AssetController {
             ResponseUtil.error(res, error.message || 'Failed to update asset', 500);
         }
     }
+
+    async delete(req: Request, res: Response): Promise<void> {
+        try {
+            const id = Number(req.params.id);
+            await this.assetService.deleteAsset(id);
+
+            ResponseUtil.success(res, null, 'Asset deleted successfully');
+        }catch(error:any) {
+            ResponseUtil.error(res, error.message || 'Failed to delete asset', 500);
+        }
+    }
 }
