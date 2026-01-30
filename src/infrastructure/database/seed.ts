@@ -5,9 +5,19 @@ async function seed() {
   try {
     console.log('Starting database seeding...')
 
+    // Clear existing data (in reverse order to handle foreign key constraints)
+    console.log('Clearing existing data...')
+    await db.deleteFrom('asset_items').execute()
+    await db.deleteFrom('asset_requests').execute()
+    await db.deleteFrom('assets').execute()
+    await db.deleteFrom('users').execute()
+    await db.deleteFrom('departments').execute()
+    await db.deleteFrom('categories').execute()
+    console.log('✓ Existing data cleared')
+
     // Seed Categories
     console.log('Seeding categories...')
-    const categories = await db
+    await db
       .insertInto('categories')
       .values([
         {
@@ -26,14 +36,18 @@ async function seed() {
           updated_at: new Date(),
         },
       ])
-      .returningAll()
+      .execute()
+    
+    const categories = await db
+      .selectFrom('categories')
+      .selectAll()
       .execute()
     
     console.log(`✓ Seeded ${categories.length} categories`)
 
     // Seed Departments
     console.log('Seeding departments...')
-    const departments = await db
+    await db
       .insertInto('departments')
       .values([
         {
@@ -97,7 +111,11 @@ async function seed() {
           updated_at: new Date(),
         },
       ])
-      .returningAll()
+      .execute()
+    
+    const departments = await db
+      .selectFrom('departments')
+      .selectAll()
       .execute()
     
     console.log(`✓ Seeded ${departments.length} departments`)
@@ -106,7 +124,7 @@ async function seed() {
     console.log('Seeding users...')
     const passwordHash = await bcrypt.hash('password123', 10)
     
-    const users = await db
+    await db
       .insertInto('users')
       .values([
         {
@@ -154,14 +172,18 @@ async function seed() {
           deleted_at: null,
         },
       ])
-      .returningAll()
+      .execute()
+    
+    const users = await db
+      .selectFrom('users')
+      .selectAll()
       .execute()
     
     console.log(`✓ Seeded ${users.length} users`)
 
     // Seed Assets
     console.log('Seeding assets...')
-    const assets = await db
+    await db
       .insertInto('assets')
       .values([
         {
@@ -201,14 +223,18 @@ async function seed() {
           deleted_at: null,
         },
       ])
-      .returningAll()
+      .execute()
+    
+    const assets = await db
+      .selectFrom('assets')
+      .selectAll()
       .execute()
     
     console.log(`✓ Seeded ${assets.length} assets`)
 
     // Seed Asset Items
     console.log('Seeding asset items...')
-    const assetItems = await db
+    await db
       .insertInto('asset_items')
       .values([
         {
@@ -252,7 +278,11 @@ async function seed() {
           updated_at: new Date(),
         },
       ])
-      .returningAll()
+      .execute()
+    
+    const assetItems = await db
+      .selectFrom('asset_items')
+      .selectAll()
       .execute()
     
     console.log(`✓ Seeded ${assetItems.length} asset items`)
