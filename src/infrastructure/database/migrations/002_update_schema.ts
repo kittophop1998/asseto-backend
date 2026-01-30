@@ -78,13 +78,14 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('department_id', 'integer', (col) => col.notNull())
     .addColumn('description', 'text', (col) => col.notNull())
     .addColumn('minimum_qty', 'integer', (col) => col.notNull().defaultTo(0))
-    .addColumn('status', 'varchar(50)', (col) => col.notNull().defaultTo('NORMAL'))
+    .addColumn('status', 'varchar(50)', (col) => col.notNull().defaultTo('NORMAL')) // NORMAL or LOW_STOCK
     .addColumn('created_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
     )
     .addColumn('updated_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
     )
+    .addColumn('deleted_at', 'timestamp')
     .addForeignKeyConstraint(
       'assets_category_id_fk',
       ['category_id'],
@@ -196,6 +197,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('user_id', 'integer', (col) => col.notNull())
     .addColumn('department_id', 'integer', (col) => col.notNull())
     .addColumn('serial_number', 'varchar(255)', (col) => col.notNull())
+    .addColumn('status', 'varchar(50)', (col) => col.notNull())
     .addColumn('assigned_date', 'date', (col) => col.notNull())
     .addColumn('returned_date', 'date')
     .addColumn('created_at', 'timestamp', (col) =>

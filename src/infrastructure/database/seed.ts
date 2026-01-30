@@ -1,4 +1,5 @@
 import { db } from './maria'
+import * as bcrypt from 'bcrypt'
 
 async function seed() {
   try {
@@ -17,6 +18,11 @@ async function seed() {
         {
           name: 'ซอฟต์แวร์',
           description: 'โปรแกรมและแอปพลิเคชันต่างๆ ที่ใช้ในองค์กร',
+          updated_at: new Date(),
+        },
+        {
+          name: 'เครื่องใช้สำนักงาน',
+          description: 'อุปกรณ์สำนักงานทั่วไป เช่น เครื่องพิมพ์ เครื่องสแกน',
           updated_at: new Date(),
         },
       ])
@@ -95,6 +101,161 @@ async function seed() {
       .execute()
     
     console.log(`✓ Seeded ${departments.length} departments`)
+
+    // Seed Users
+    console.log('Seeding users...')
+    const passwordHash = await bcrypt.hash('password123', 10)
+    
+    const users = await db
+      .insertInto('users')
+      .values([
+        {
+          username: 'admin',
+          password_hash: passwordHash,
+          full_name: 'ผู้ดูแลระบบ',
+          email: 'admin@example.com',
+          department_id: departments[3].id, // IT Department
+          is_approved: true,
+          role: 'ADMIN',
+          updated_at: new Date(),
+          deleted_at: null,
+        },
+        {
+          username: 'manager1',
+          password_hash: passwordHash,
+          full_name: 'ผู้จัดการฝ่ายไอที',
+          email: 'manager1@example.com',
+          department_id: departments[3].id, // IT Department
+          is_approved: true,
+          role: 'MANAGER',
+          updated_at: new Date(),
+          deleted_at: null,
+        },
+        {
+          username: 'staff1',
+          password_hash: passwordHash,
+          full_name: 'พนักงานฝ่ายการตลาด',
+          email: 'staff1@example.com',
+          department_id: departments[4].id, // Marketing Department
+          is_approved: true,
+          role: 'STAFF',
+          updated_at: new Date(),
+          deleted_at: null,
+        },
+        {
+          username: 'staff2',
+          password_hash: passwordHash,
+          full_name: 'พนักงานสาขากรุงเทพ',
+          email: 'staff2@example.com',
+          department_id: departments[5].id, // Bangkok Branch
+          is_approved: true,
+          role: 'STAFF',
+          updated_at: new Date(),
+          deleted_at: null,
+        },
+      ])
+      .returningAll()
+      .execute()
+    
+    console.log(`✓ Seeded ${users.length} users`)
+
+    // Seed Assets
+    console.log('Seeding assets...')
+    const assets = await db
+      .insertInto('assets')
+      .values([
+        {
+          code: 'AST-001',
+          name: 'คอมพิวเตอร์โน้ตบุ๊ค Dell Latitude',
+          category_id: categories[0].id, // IT Equipment
+          department_id: departments[3].id, // IT Department
+          description: 'โน้ตบุ๊คสำหรับงานทั่วไป Intel Core i5, RAM 8GB, SSD 256GB',
+          minimum_qty: 5,
+          status: 'NORMAL',
+          created_at: new Date(),
+          updated_at: new Date(),
+          deleted_at: null,
+        },
+        {
+          code: 'AST-002',
+          name: 'เมาส์ไร้สาย Logitech',
+          category_id: categories[0].id, // IT Equipment
+          department_id: departments[3].id, // IT Department
+          description: 'เมาส์ไร้สายสำหรับใช้งานทั่วไป',
+          minimum_qty: 10,
+          status: 'NORMAL',
+          created_at: new Date(),
+          updated_at: new Date(),
+          deleted_at: null,
+        },
+        {
+          code: 'AST-003',
+          name: 'คีย์บอร์ดไร้สาย',
+          category_id: categories[0].id, // IT Equipment
+          department_id: departments[3].id, // IT Department
+          description: 'คีย์บอร์ดไร้สาย มาตรฐาน 104 ปุ่ม',
+          minimum_qty: 10,
+          status: 'LOW_STOCK',
+          created_at: new Date(),
+          updated_at: new Date(),
+          deleted_at: null,
+        },
+      ])
+      .returningAll()
+      .execute()
+    
+    console.log(`✓ Seeded ${assets.length} assets`)
+
+    // Seed Asset Items
+    console.log('Seeding asset items...')
+    const assetItems = await db
+      .insertInto('asset_items')
+      .values([
+        {
+          asset_id: assets[0].id, // Dell Laptop
+          asset_code_ac: 'AST-001-AC-001',
+          serial_number: 'DL2024001',
+          status: 'AVAILABLE',
+          purchase_date: new Date('2024-01-15'),
+          warranty_end_date: new Date('2027-01-15'),
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          asset_id: assets[0].id, // Dell Laptop
+          asset_code_ac: 'AST-001-AC-002',
+          serial_number: 'DL2024002',
+          status: 'IN_USE',
+          purchase_date: new Date('2024-01-15'),
+          warranty_end_date: new Date('2027-01-15'),
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          asset_id: assets[1].id, // Logitech Mouse
+          asset_code_ac: 'AST-002-AC-001',
+          serial_number: 'LM2024001',
+          status: 'AVAILABLE',
+          purchase_date: new Date('2024-02-01'),
+          warranty_end_date: new Date('2025-02-01'),
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          asset_id: assets[1].id, // Logitech Mouse
+          asset_code_ac: 'AST-002-AC-002',
+          serial_number: 'LM2024002',
+          status: 'AVAILABLE',
+          purchase_date: new Date('2024-02-01'),
+          warranty_end_date: new Date('2025-02-01'),
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+      ])
+      .returningAll()
+      .execute()
+    
+    console.log(`✓ Seeded ${assetItems.length} asset items`)
 
     console.log('Database seeding completed successfully! ✓')
   } catch (error) {
