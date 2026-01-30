@@ -90,34 +90,6 @@ export class AssetRequestRepository implements IAssetRequestRepository {
             .execute();
     }
 
-    async updateRequestItem(code: string, assetItemIds: number[]): Promise<void> {
-        const assetRequestCode = await db
-            .selectFrom('asset_requests')
-            .select('code')
-            .where('code', '=', code)
-            .executeTakeFirst();
-
-        console.log('Asset Request Code:', assetRequestCode);
-
-        if (!assetRequestCode) {
-            throw new Error(`Asset request with code ${code} not found`);
-        }
-
-        const values = assetItemIds.map(assetItemId => ({
-            asset_request_code: assetRequestCode.code,
-            asset_item_id: assetItemId,
-            created_at: dayjs().toDate(),
-            updated_at: dayjs().toDate(),
-        }));
-
-        if (values.length > 0) {
-            await db
-                .insertInto('asset_request_item')
-                .values(values)
-                .execute();
-        }
-    }
-
     async getListRequestDetail(): Promise<any> {
         const requestDetails = await db
             .selectFrom('asset_users')

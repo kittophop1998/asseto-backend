@@ -1,16 +1,21 @@
 import { Kysely, sql } from 'kysely'
 
 export async function up(db: Kysely<any>): Promise<void> {
+  // Disable foreign key checks to allow dropping tables
+  await sql`SET FOREIGN_KEY_CHECKS = 0`.execute(db)
+
   // Drop existing tables to recreate with correct schema
   await db.schema.dropTable('asset_returns').ifExists().execute()
   await db.schema.dropTable('asset_users').ifExists().execute()
-  await db.schema.dropTable('asset_request_item').ifExists().execute()
   await db.schema.dropTable('asset_requests').ifExists().execute()
   await db.schema.dropTable('asset_items').ifExists().execute()
   await db.schema.dropTable('assets').ifExists().execute()
   await db.schema.dropTable('users').ifExists().execute()
   await db.schema.dropTable('departments').ifExists().execute()
   await db.schema.dropTable('categories').ifExists().execute()
+
+  // Re-enable foreign key checks
+  await sql`SET FOREIGN_KEY_CHECKS = 1`.execute(db)
 
   // Create categories table
   await db.schema
@@ -59,6 +64,13 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
     )
     .addColumn('deleted_at', 'timestamp')
+    .addForeignKeyConstraint(
+      'fk_users_department_id',
+      ['department_id'],
+      'departments',
+      ['id'],
+      (cb) => cb.onDelete('restrict')
+    )
     .execute()
 
   // Create assets table
@@ -79,6 +91,20 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
     )
     .addColumn('deleted_at', 'timestamp')
+    .addForeignKeyConstraint(
+      'fk_assets_category_id',
+      ['category_id'],
+      'categories',
+      ['id'],
+      (cb) => cb.onDelete('restrict')
+    )
+    .addForeignKeyConstraint(
+      'fk_assets_department_id',
+      ['department_id'],
+      'departments',
+      ['id'],
+      (cb) => cb.onDelete('restrict')
+    )
     .execute()
 
   // Create asset_items table
@@ -96,6 +122,13 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn('updated_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
+    )
+    .addForeignKeyConstraint(
+      'fk_asset_items_asset_id',
+      ['asset_id'],
+      'assets',
+      ['id'],
+      (cb) => cb.onDelete('cascade')
     )
     .execute()
 
@@ -118,6 +151,27 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('updated_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
     )
+    .addForeignKeyConstraint(
+      'fk_asset_requests_department_id',
+      ['department_id'],
+      'departments',
+      ['id'],
+      (cb) => cb.onDelete('restrict')
+    )
+    .addForeignKeyConstraint(
+      'fk_asset_requests_requester_id',
+      ['requester_id'],
+      'users',
+      ['id'],
+      (cb) => cb.onDelete('restrict')
+    )
+    .addForeignKeyConstraint(
+      'fk_asset_requests_approver_id',
+      ['approver_id'],
+      'users',
+      ['id'],
+      (cb) => cb.onDelete('restrict')
+    )
     .execute()
 
   // Create asset_users table
@@ -135,6 +189,20 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn('updated_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
+    )
+    .addForeignKeyConstraint(
+      'fk_asset_users_user_id',
+      ['user_id'],
+      'users',
+      ['id'],
+      (cb) => cb.onDelete('cascade')
+    )
+    .addForeignKeyConstraint(
+      'fk_asset_users_department_id',
+      ['department_id'],
+      'departments',
+      ['id'],
+      (cb) => cb.onDelete('restrict')
     )
     .execute()
 
@@ -194,18 +262,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db.schema
-    .createIndex('idx_asset_request_item_request_code')
-    .on('asset_request_item')
-    .column('asset_request_code')
-    .execute()
-
-  await db.schema
-    .createIndex('idx_asset_request_item_item_id')
-    .on('asset_request_item')
-    .column('asset_item_id')
-    .execute()
-
-  await db.schema
     .createIndex('idx_asset_users_user_id')
     .on('asset_users')
     .column('user_id')
@@ -225,6 +281,9 @@ export async function up(db: Kysely<any>): Promise<void> {
 }
 
   export async function down(db: Kysely<any>): Promise<void> {
+  // Disable foreign key checks to allow dropping tables
+  await sql`SET FOREIGN_KEY_CHECKS = 0`.execute(db)
+
   await db.schema.dropTable('asset_users').ifExists().execute()
   await db.schema.dropTable('asset_requests').ifExists().execute()
   await db.schema.dropTable('asset_items').ifExists().execute()
@@ -232,4 +291,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable('users').ifExists().execute()
   await db.schema.dropTable('departments').ifExists().execute()
   await db.schema.dropTable('categories').ifExists().execute()
+
+  // Re-enable foreign key checks
+  await sql`SET FOREIGN_KEY_CHECKS = 1`.execute(db)
 }
