@@ -30,6 +30,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
             .innerJoin('departments', 'asset_requests.department_id', 'departments.id')
             .leftJoin('asset_items', 'asset_requests.serial_number', 'asset_items.serial_number')
             .innerJoin('assets', 'asset_items.asset_id', 'assets.id')
+            .innerJoin('users as requester', 'asset_requests.requester_id', 'requester.id')
             .leftJoin('asset_users', (join) => join
                 .onRef('asset_users.serial_number', '=', 'asset_requests.serial_number')
                 .onRef('asset_users.user_id', '=', 'asset_requests.requester_id')
@@ -60,6 +61,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
                 'asset_items.serial_number as serialNumber',
                 'assets.name as assetName',
                 'asset_users.status as assetUserStatus',
+                'requester.full_name as requesterName',
             ])
             .execute();
 
@@ -195,5 +197,17 @@ export class AssetRequestRepository implements IAssetRequestRepository {
             })
             .where('id', '=', id)
             .execute();
+    }
+
+    async getPendingRequestBySerialNumberAndRequesterId(serialNumber: string, requesterId: number): Promise<any> {
+        const request = await db
+            .selectFrom('asset_requests')
+            .selectAll()
+            .where('serial_number', '=', serialNumber)
+            .where('requester_id', '=', requesterId)
+            .where('status', '=', 'PENDING')
+            .executeTakeFirst();
+
+        return request;
     }
 }

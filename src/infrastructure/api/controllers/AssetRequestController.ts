@@ -32,7 +32,7 @@ export class AssetRequestController {
             
             ResponseUtil.created(res, 'Asset request created successfully');
         } catch (error: any) {
-            ResponseUtil.error(res, ' Failed to create asset request', 500, error);
+            ResponseUtil.error(res, ' Failed to create asset request', 500, error.message);
         }
     }
 

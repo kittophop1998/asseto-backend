@@ -13,4 +13,5 @@ export interface IAssetRequestRepository {
     updateAssetUserStatus(userId: number, serialNumber: string, status: string): Promise<void>;
     updateAssetUserReturnDate(userId: number, serialNumber: string): Promise<void>
     updateAssetUserById(id: number, status: string): Promise<void>;
+    getPendingRequestBySerialNumberAndRequesterId(serialNumber: string, requesterId: number): Promise<any>
 }

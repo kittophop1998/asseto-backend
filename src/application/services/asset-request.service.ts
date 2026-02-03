@@ -14,6 +14,16 @@ export class AssetRequestService {
     ) { }
 
     async createAssetRequest(data: CreateAssetRequestInput, type: string): Promise<any> {
+        const existingItem = await this.assetItemRepository.getItemBySerialNumber(data.serialNumber);
+        if (!existingItem) {
+            throw new Error('Asset item not found');
+        }
+
+        const existingRequest = await this.assetRequestRepository.getPendingRequestBySerialNumberAndRequesterId(data.serialNumber, data.requesterId);
+        if (existingRequest) {
+            throw new Error('There is already a pending request for this asset by the same requester');
+        }
+
         const lastCode = await this.assetRequestRepository.getLastRequestCode();
         const code = this.generateAssetRequestCode('AR-', lastCode ? parseInt(lastCode.replace('AR-', '')) : 0);
 
