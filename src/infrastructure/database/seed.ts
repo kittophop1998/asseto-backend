@@ -17,16 +17,19 @@ async function seed() {
       .values([
         {
           name: 'อุปกรณ์ไอที',
+          prefix: 'IT',
           description: 'อุปกรณ์คอมพิวเตอร์และอุปกรณ์ประกอบ เช่น เมาส์ คีย์บอร์ด จอภาพ',
           updated_at: new Date(),
         },
         {
           name: 'ซอฟต์แวร์',
+          prefix: 'SW',
           description: 'โปรแกรมและแอปพลิเคชันต่างๆ ที่ใช้ในองค์กร',
           updated_at: new Date(),
         },
         {
           name: 'เครื่องใช้สำนักงาน',
+          prefix: 'OF',
           description: 'อุปกรณ์สำนักงานทั่วไป เช่น เครื่องพิมพ์ เครื่องสแกน',
           updated_at: new Date(),
         },
