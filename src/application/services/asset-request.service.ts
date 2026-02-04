@@ -35,7 +35,7 @@ export class AssetRequestService {
             type: type.toLocaleUpperCase()
         };
         const request = await this.assetRequestRepository.create(input);
-        
+
         if (type === 'REQUEST') {
             await this.assetRequestRepository.createAssetUser(
                 data.requesterId,
@@ -54,7 +54,30 @@ export class AssetRequestService {
 
     async getAllAssetRequests(): Promise<any> {
         const requests = await this.assetRequestRepository.getAllRequest();
-        return requests;
+
+        // เพิ่ม signed URL สำหรับแสดงรูปภาพจาก S3
+        const requestsWithImages = await Promise.all(
+            requests.map(async (request: any) => {
+                if (request.imageUrl) {
+                    try {
+                        const signedUrl = await s3.getSignedDownloadUrl({
+                            key: request.imageUrl,
+                            expiresIn: 3600, // URL จะหมดอายุใน 1 ชั่วโมง
+                        });
+                        return {
+                            ...request,
+                            imageUrl: signedUrl.url,
+                        };
+                    } catch (error) {
+                        console.error(`Error generating signed URL for ${request.imageUrl}:`, error);
+                        return request;
+                    }
+                }
+                return request;
+            })
+        );
+
+        return requestsWithImages;
     }
 
     async getMyAssetFormRequest(id: number): Promise<any> {
@@ -96,7 +119,7 @@ export class AssetRequestService {
         if (!assetItem || !assetItem.id) {
             throw new Error('Asset item not found');
         }
-        
+
         await this.assetRequestRepository.updateStatus(code, 'REJECTED');
     }
 
@@ -112,15 +135,15 @@ export class AssetRequestService {
 
     async uploadRequestImage(file: Express.Multer.File, requestCode: string): Promise<string> {
         const result = await s3.uploadFromMultipart(file, 'asset-requests');
-        
+
         if (!result.success) {
             throw new Error('Failed to upload image to S3');
         }
 
         const imageUrl = result.key;
-        
+
         await this.assetRequestRepository.update({ requestCode, imageUrl });
-        
+
         return imageUrl;
     }
 }
