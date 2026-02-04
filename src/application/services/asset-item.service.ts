@@ -4,6 +4,7 @@ import { IAssetItemRepository } from "../repository/IAssetItemRepositpry";
 export interface CreateAssetItemRequest {
     assetId: number;
     assetCodeAC: string;
+    assetCode: string;
     serialNumber: string;
     purchaseDate: string;
     warrantyEnd: string;

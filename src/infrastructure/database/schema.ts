@@ -31,6 +31,7 @@ export interface AssetItemTable {
   id: Generated<number>
   asset_id: number
   asset_code_ac: string
+  asset_code: string
   serial_number: string
   status: 'AVAILABLE' | 'IN_USE' | 'UNDER_MAINTENANCE' | 'RETIRED'
   purchase_date: Date
@@ -70,6 +71,7 @@ export interface AssetUserTable {
 export interface CategoryTable {
   id: Generated<number>
   name: string
+  prefix: string
   description: string
   created_at: Generated<Date>
   updated_at: Date

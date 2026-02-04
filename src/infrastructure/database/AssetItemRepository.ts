@@ -12,6 +12,7 @@ export class AssetItemRepository implements IAssetItemRepository {
             .values({
                 asset_id: input.assetId,
                 asset_code_ac: input.assetCodeAC.trim(),
+                asset_code: input.assetCode.trim(),
                 serial_number: input.serialNumber.trim(),
                 status: 'AVAILABLE',
                 purchase_date: dayjs(input.purchaseDate).toDate(),
@@ -29,6 +30,7 @@ export class AssetItemRepository implements IAssetItemRepository {
                 'asset_items.id as assetId',
                 'asset_items.serial_number as serialNumber',
                 'asset_items.asset_code_ac as assetCodeAC',
+                'asset_items.asset_code as assetCode',
                 'asset_items.status as status',
                 sql`DATE_FORMAT(CONVERT_TZ(asset_items.purchase_date,'+00:00','+07:00'), '%Y-%m-%d')`.as('purchaseDate'),
                 sql`DATE_FORMAT(CONVERT_TZ(asset_items.warranty_end_date,'+00:00','+07:00'), '%Y-%m-%d')`.as('warrantyEnd'),
@@ -38,17 +40,6 @@ export class AssetItemRepository implements IAssetItemRepository {
             .where('asset_id', '=', assetId)
             .execute();
 
-        // const assetResults = assetItems.map(item => AssetItem.create({
-        //     id: item.id,
-        //     assetId: item.asset_id,
-        //     assetCodeAC: item.asset_code_ac.trim(),
-        //     serialNumber: item.serial_number.trim(),
-        //     status: item.status,
-        //     purchaseDate: dayjs(item.purchase_date).toDate(),
-        //     warrantyEnd: dayjs(item.warranty_end_date).toDate(),
-        //     createdAt: item.created_at ? dayjs(item.created_at).toDate() : undefined,
-        //     updatedAt: item.updated_at ? dayjs(item.updated_at).toDate() : undefined,
-        // }));
         return assetItems;
     }
 

@@ -22,6 +22,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createTable('categories')
     .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
     .addColumn('name', 'varchar(255)', (col) => col.notNull())
+    .addColumn('prefix', 'varchar(50)', (col) => col.notNull())
     .addColumn('description', 'text', (col) => col.notNull())
     .addColumn('created_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
@@ -113,6 +114,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
     .addColumn('asset_id', 'integer', (col) => col.notNull())
     .addColumn('asset_code_ac', 'varchar(100)', (col) => col.notNull())
+    .addColumn('asset_code', 'varchar(100)', (col) => col.notNull())
     .addColumn('serial_number', 'varchar(255)', (col) => col.notNull().unique())
     .addColumn('status', 'varchar(50)', (col) => col.notNull().defaultTo('AVAILABLE')) // AVAILABLE, IN_USE, UNDER_MAINTENANCE, RETIRED
     .addColumn('purchase_date', 'date', (col) => col.notNull())

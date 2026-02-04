@@ -76,6 +76,7 @@ export class AssetRepository implements IAssetRepository {
                 'assets.name',
                 'assets.category_id',
                 'categories.name as category_name',
+                'categories.prefix as category_prefix',
                 'assets.description',
                 'assets.minimum_qty',
                 'assets.status',
@@ -83,6 +84,23 @@ export class AssetRepository implements IAssetRepository {
                 'departments.name as department_name',
                 'assets.created_at',
                 'assets.updated_at',
+                sql<string>`
+                    CONCAT(
+                        categories.prefix,
+                        '-',
+                        LPAD(
+                            COALESCE(
+                                (SELECT MAX(CAST(SUBSTRING_INDEX(ai2.asset_code, '-', -1) AS UNSIGNED)) + 1
+                                 FROM asset_items ai2
+                                 INNER JOIN assets a2 ON a2.id = ai2.asset_id
+                                 WHERE a2.category_id = assets.category_id),
+                                1
+                            ),
+                            4,
+                            '0'
+                        )
+                    )
+                `.as('lastCodeAssetItem'),
             ])
             .executeTakeFirst();
 
