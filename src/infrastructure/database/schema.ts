@@ -44,6 +44,7 @@ export interface AssetRequestTable {
   code: string
   serial_number: string
   department_id: number
+  image_url: string | null
   type: 'REQUEST' | 'RETURN'
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED'
   requester_id: number

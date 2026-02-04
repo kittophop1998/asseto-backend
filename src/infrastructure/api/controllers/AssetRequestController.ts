@@ -131,4 +131,26 @@ export class AssetRequestController {
             ResponseUtil.error(res, ' Failed to process asset return', 500, error);
         }
     }
+
+    async uploadRequestImage(req: Request, res: Response) {
+        try {
+            if (!req.file) {
+                ResponseUtil.error(res, 'No file uploaded', 400);
+                return;
+            }
+
+            const requestCode = req.body.requestCode;
+            if (!requestCode) {
+                ResponseUtil.error(res, 'Request code is required', 400);
+                return;
+            }
+
+            const file = req.file;
+            
+            const imageUrl = await this.assetRequestService.uploadRequestImage(file, requestCode);
+            ResponseUtil.success(res, { imageUrl }, 'Request image uploaded successfully', 200);
+        }catch (error: any) {
+            ResponseUtil.error(res, 'Failed to upload request image', 500, error.message);
+        }
+    }
 }

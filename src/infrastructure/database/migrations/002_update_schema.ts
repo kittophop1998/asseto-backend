@@ -139,6 +139,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('code', 'varchar(50)', (col) => col.notNull().unique())
     .addColumn('serial_number', 'varchar(255)', (col) => col.notNull())
     .addColumn('department_id', 'integer', (col) => col.notNull())
+    .addColumn('image_url', 'varchar(500)')
     .addColumn('type', 'varchar(50)', (col) => col.notNull()) // REQUEST or RETURN
     .addColumn('status', 'varchar(50)', (col) => col.notNull().defaultTo('PENDING')) // PENDING, APPROVED, REJECTED, CANCELLED
     .addColumn('requester_id', 'integer', (col) => col.notNull())

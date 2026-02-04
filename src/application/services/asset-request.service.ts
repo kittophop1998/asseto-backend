@@ -1,3 +1,4 @@
+import s3 from "../../infrastructure/api/utils/s3";
 import { IAssetItemRepository } from "../repository/IAssetItemRepositpry";
 import { IAssetRequestRepository } from "../repository/IAssetRequestRepository";
 
@@ -107,5 +108,19 @@ export class AssetRequestService {
             .padStart(length, '0');
 
         return `${prefix}${paddedNumber}`;
+    }
+
+    async uploadRequestImage(file: Express.Multer.File, requestCode: string): Promise<string> {
+        const result = await s3.uploadFromMultipart(file, 'asset-requests');
+        
+        if (!result.success) {
+            throw new Error('Failed to upload image to S3');
+        }
+
+        const imageUrl = result.key;
+        
+        await this.assetRequestRepository.update({ requestCode, imageUrl });
+        
+        return imageUrl;
     }
 }

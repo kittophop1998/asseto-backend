@@ -11,7 +11,8 @@ export interface IAssetRequestRepository {
     getRequestByCode(code: string): Promise<any>
     createAssetUser(userId: number, serialNumber: string, departmentId: number, status: string): Promise<void>
     updateAssetUserStatus(userId: number, serialNumber: string, status: string): Promise<void>;
-    updateAssetUserReturnDate(userId: number, serialNumber: string): Promise<void>
+    updateAssetUserReturnDate(userId: number, serialNumber: string): Promise<void>;
     updateAssetUserById(id: number, status: string): Promise<void>;
-    getPendingRequestBySerialNumberAndRequesterId(serialNumber: string, requesterId: number): Promise<any>
+    getPendingRequestBySerialNumberAndRequesterId(serialNumber: string, requesterId: number): Promise<any>;
+    update(input:any): Promise<void>;
 }

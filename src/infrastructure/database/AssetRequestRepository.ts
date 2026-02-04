@@ -54,6 +54,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
                 'asset_requests.type as requestType',
                 'departments.name as departmentName',
                 'asset_requests.status as status',
+                'asset_requests.image_url as imageUrl',
                 'asset_requests.request_date as requestDate',
                 'asset_requests.approval_date as approvalDate',
                 'asset_requests.created_at as createdAt',
@@ -209,5 +210,16 @@ export class AssetRequestRepository implements IAssetRequestRepository {
             .executeTakeFirst();
 
         return request;
+    }
+
+    async update(input:any): Promise<void> {
+        await db
+            .updateTable('asset_requests')
+            .set({
+                image_url: input.imageUrl,
+                updated_at: dayjs().toDate(),
+            })
+            .where('code', '=', input.requestCode)
+            .execute();
     }
 }
