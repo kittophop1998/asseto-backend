@@ -98,12 +98,12 @@ export class AssetRequestService {
 
         if (type === 'REQUEST') {
             await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.serial_number, 'APPROVED');
-            await this.assetItemRepository.updateAssetItem(assetItem.id, 'IN_USE');
+            await this.assetItemRepository.updateAssetItem(assetItem.id, {status: 'IN_USE'});
             await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.serial_number, 'APPROVED');
             await this.assetRequestRepository.updateStatus(code, 'APPROVED');
         } else if (type === 'RETURN') {
             await this.assetRequestRepository.updateAssetUserReturnDate(request.requester_id, request.serial_number);
-            await this.assetItemRepository.updateAssetItem(assetItem.id, 'AVAILABLE');
+            await this.assetItemRepository.updateAssetItem(assetItem.id, {status: 'AVAILABLE'});
             await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.serial_number, 'RETURNED');
             await this.assetRequestRepository.updateStatus(code, 'APPROVED');
         }

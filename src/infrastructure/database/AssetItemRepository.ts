@@ -76,14 +76,40 @@ export class AssetItemRepository implements IAssetItemRepository {
         return assetItems;
     }
 
-    async updateAssetItem(id: number, status: string): Promise<void> {
+    async updateAssetItem(id: number, input: any): Promise<void> {
         await db
             .updateTable('asset_items')
             .set({
-                status: status as 'AVAILABLE' | 'IN_USE',
+                ...input,
                 updated_at: dayjs().toDate(),
             })
             .where('id', '=', id)
             .execute();
+    }
+
+    async getItemByAssetItemCode(assetItemCode: string): Promise<any | null> {
+        const assetItem = await db
+            .selectFrom('asset_items')
+            .innerJoin('assets', 'asset_items.asset_id', 'assets.id')
+            .select([
+                'asset_items.id as id',
+                'asset_items.asset_id as assetId',
+                'assets.name as assetName',
+                'asset_items.asset_code_ac as assetCodeAC',
+                'asset_items.serial_number as serialNumber',
+                'asset_items.status as status',
+                'asset_items.purchase_date as purchaseDate',
+                'asset_items.warranty_end_date as warrantyEnd',
+                'asset_items.created_at as createdAt',
+                'asset_items.updated_at as updatedAt',
+            ])
+            .where('asset_items.asset_code', '=', assetItemCode)
+            .executeTakeFirst();
+
+        if (!assetItem) {
+            return null;
+        }
+
+        return assetItem;
     }
 }

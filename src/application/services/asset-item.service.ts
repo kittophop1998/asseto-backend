@@ -31,4 +31,20 @@ export class AssetItemService {
     async getAssetItemBySerialNumber(serialNumber: string): Promise<AssetItem | null> {
         return this.assetItemRepository.getItemBySerialNumber(serialNumber);
     }
+
+    async getAssetItemByAssetItemCode(assetItemCode: string): Promise<any | null> {
+        return this.assetItemRepository.getItemByAssetItemCode(assetItemCode);
+    }
+
+    async update(id: number, input: any): Promise<void> {
+        const inputUpdate = {
+            asset_code_ac: input.assetCodeAC,
+            asset_code: input.assetCode,
+            serial_number: input.serialNumber,
+            purchase_date: input.purchaseDate,
+            warranty_end_date: input.warrantyEnd
+        };
+        
+        await this.assetItemRepository.updateAssetItem(id, inputUpdate);
+    }
 }

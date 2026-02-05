@@ -63,4 +63,34 @@ export class AssetItemController {
             ResponseUtil.error(res, error.message || 'Failed to get asset item by serial number', 500);
         }
     }
+
+    async update(req: Request, res: Response): Promise<void> {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                ResponseUtil.error(res, 'Asset item ID is required', 400);
+                return;
+            }
+
+            await this.assetItemService.update(id, req.body);
+            ResponseUtil.success(res, null, 'Asset item updated successfully');
+        }   catch (error: any) {
+            ResponseUtil.error(res, error.message || 'Failed to update asset item', 500);
+        }     
+    }
+
+    async getAssetItemByAssetItemCode(req: Request, res: Response): Promise<void> {
+        try {
+            const assetItemCode = req.params.id?.toString();
+            if (!assetItemCode) {
+                ResponseUtil.error(res, 'Asset item code is required', 400);
+                return;
+            }
+
+            const assetItem = await this.assetItemService.getAssetItemByAssetItemCode(assetItemCode);
+            ResponseUtil.success(res, assetItem, 'Asset item retrieved successfully');
+        } catch (error: any) {
+            ResponseUtil.error(res, error.message || 'Failed to get asset item by asset item code', 500);
+        }
+    }
 }
