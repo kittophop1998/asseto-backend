@@ -9,7 +9,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
             .values({
                 code: input.code,
                 type: input.type,
-                serial_number: input.serialNumber ?? '',
+                asset_item_code: input.assetItemCode ?? '',
                 department_id: input.departmentId,
                 status: input.status,
                 requester_id: input.requesterId ?? 1,
@@ -28,11 +28,11 @@ export class AssetRequestRepository implements IAssetRequestRepository {
         let query = await db
             .selectFrom('asset_requests')
             .innerJoin('departments', 'asset_requests.department_id', 'departments.id')
-            .leftJoin('asset_items', 'asset_requests.serial_number', 'asset_items.serial_number')
+            .leftJoin('asset_items', 'asset_requests.asset_item_code', 'asset_items.asset_code')
             .innerJoin('assets', 'asset_items.asset_id', 'assets.id')
             .innerJoin('users as requester', 'asset_requests.requester_id', 'requester.id')
             .leftJoin('asset_users', (join) => join
-                .onRef('asset_users.serial_number', '=', 'asset_requests.serial_number')
+                .onRef('asset_users.asset_item_code', '=', 'asset_requests.asset_item_code')
                 .onRef('asset_users.user_id', '=', 'asset_requests.requester_id')
                 .on('asset_users.returned_date', 'is', null)
             )
@@ -97,7 +97,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
         const requestDetails = await db
             .selectFrom('asset_users')
             .innerJoin('departments', 'asset_users.department_id', 'departments.id')
-            .innerJoin('asset_items', 'asset_users.serial_number', 'asset_items.serial_number')
+            .innerJoin('asset_items', 'asset_users.asset_item_code', 'asset_items.asset_code')
             .innerJoin('assets', 'asset_items.asset_id', 'assets.id')
             .innerJoin('users', 'asset_users.user_id', 'users.id')
             .select([
@@ -125,7 +125,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
 
     async createAssetUser(
         userId: number, 
-        serialNumber: string, 
+        assetItemCode: string, 
         departmentId: number,
         status: string
     ) : Promise<void> {
@@ -133,7 +133,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
             .insertInto('asset_users')
             .values({
                 user_id: userId,
-                serial_number: serialNumber,
+                asset_item_code: assetItemCode,
                 department_id: departmentId,
                 status: status,
                 assigned_date: dayjs().toDate(),
@@ -144,7 +144,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
             .execute();
     }
 
-    async updateAssetUserStatus(userId: number, serialNumber: string, status: string): Promise<void> {
+    async updateAssetUserStatus(userId: number, assetItemCode: string, status: string): Promise<void> {
         await db
             .updateTable('asset_users')
             .set({
@@ -152,12 +152,12 @@ export class AssetRequestRepository implements IAssetRequestRepository {
                 updated_at: dayjs().toDate(),
             })
             .where('user_id', '=', userId)
-            .where('serial_number', '=', serialNumber)
+            .where('asset_item_code', '=', assetItemCode)
             .where('returned_date', 'is', null)
             .execute();
     }
 
-    async updateAssetUserReturnDate(userId: number, serialNumber: string): Promise<void> {
+    async updateAssetUserReturnDate(userId: number, assetItemCode: string): Promise<void> {
         await db
             .updateTable('asset_users')
             .set({
@@ -165,17 +165,18 @@ export class AssetRequestRepository implements IAssetRequestRepository {
                 updated_at: dayjs().toDate(),
             })
             .where('user_id', '=', userId)
-            .where('serial_number', '=', serialNumber)
+            .where('asset_item_code', '=', assetItemCode)
             .execute();
     }
 
     async getMyAsset(id: number): Promise<any> {
         const assets = await db
             .selectFrom('asset_users')
-            .leftJoin('asset_items', 'asset_users.serial_number', 'asset_items.serial_number')
+            .leftJoin('asset_items', 'asset_users.asset_item_code', 'asset_items.asset_code')
             .leftJoin('assets', 'asset_items.asset_id', 'assets.id')
             .select([
                 'assets.name as assetName',
+                'asset_items.asset_code as assetItemCode',
                 'asset_items.serial_number as serialNumber',
                 'asset_users.department_id as departmentId',
                 'asset_users.assigned_date as assignedDate',
@@ -200,11 +201,11 @@ export class AssetRequestRepository implements IAssetRequestRepository {
             .execute();
     }
 
-    async getPendingRequestBySerialNumberAndRequesterId(serialNumber: string, requesterId: number): Promise<any> {
+    async getPendingRequestByAssetItemCodeAndRequesterId(assetItemCode: string, requesterId: number): Promise<any> {
         const request = await db
             .selectFrom('asset_requests')
             .selectAll()
-            .where('serial_number', '=', serialNumber)
+            .where('asset_item_code', '=', assetItemCode)
             .where('requester_id', '=', requesterId)
             .where('status', '=', 'PENDING')
             .executeTakeFirst();

@@ -96,6 +96,7 @@ export class AssetItemRepository implements IAssetItemRepository {
                 'asset_items.asset_id as assetId',
                 'assets.name as assetName',
                 'asset_items.asset_code_ac as assetCodeAC',
+                'asset_items.asset_code as assetCode',
                 'asset_items.serial_number as serialNumber',
                 'asset_items.status as status',
                 'asset_items.purchase_date as purchaseDate',

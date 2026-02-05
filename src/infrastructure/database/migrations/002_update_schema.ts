@@ -5,9 +5,10 @@ export async function up(db: Kysely<any>): Promise<void> {
   await sql`SET FOREIGN_KEY_CHECKS = 0`.execute(db)
 
   // Drop existing tables to recreate with correct schema
-  await db.schema.dropTable('asset_returns').ifExists().execute()
   await db.schema.dropTable('asset_users').ifExists().execute()
+  await db.schema.dropTable('asset_request_item').ifExists().execute()
   await db.schema.dropTable('asset_requests').ifExists().execute()
+  await db.schema.dropTable('asset_returns').ifExists().execute()
   await db.schema.dropTable('asset_items').ifExists().execute()
   await db.schema.dropTable('assets').ifExists().execute()
   await db.schema.dropTable('users').ifExists().execute()
@@ -139,7 +140,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createTable('asset_requests')
     .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
     .addColumn('code', 'varchar(50)', (col) => col.notNull().unique())
-    .addColumn('serial_number', 'varchar(255)', (col) => col.notNull())
+    .addColumn('asset_item_code', 'varchar(255)', (col) => col.notNull())
     .addColumn('department_id', 'integer', (col) => col.notNull())
     .addColumn('image_url', 'varchar(500)')
     .addColumn('type', 'varchar(50)', (col) => col.notNull()) // REQUEST or RETURN
@@ -183,7 +184,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
     .addColumn('user_id', 'integer', (col) => col.notNull())
     .addColumn('department_id', 'integer', (col) => col.notNull())
-    .addColumn('serial_number', 'varchar(255)', (col) => col.notNull())
+    .addColumn('asset_item_code', 'varchar(255)', (col) => col.notNull())
     .addColumn('status', 'varchar(50)', (col) => col.notNull())
     .addColumn('assigned_date', 'date', (col) => col.notNull())
     .addColumn('returned_date', 'date')
@@ -271,9 +272,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db.schema
-    .createIndex('idx_asset_users_serial_number')
+    .createIndex('idx_asset_users_asset_item_code')
     .on('asset_users')
-    .column('serial_number')
+    .column('asset_item_code')
     .execute()
 
   await db.schema

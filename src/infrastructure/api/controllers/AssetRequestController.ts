@@ -23,7 +23,7 @@ export class AssetRequestController {
             }
             
             const input = {
-                serialNumber: req.body.serialNumber,
+                assetItemCode: req.body.assetItemCode,
                 departmentId: departmentId,
                 requesterId: userId
             };
@@ -118,7 +118,7 @@ export class AssetRequestController {
             }
 
             const input = {
-                serialNumber: req.body.serialNumber ?? '',
+                assetItemCode: req.body.assetItemCode ?? '',
                 departmentId: Number(req.user?.department_id) ?? 0,
                 requesterId: Number(req.user?.id) ?? 0
             };

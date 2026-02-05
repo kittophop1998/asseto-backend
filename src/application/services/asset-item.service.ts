@@ -28,9 +28,9 @@ export class AssetItemService {
         await this.assetItemRepository.deleteItem(id);
     }
 
-    async getAssetItemBySerialNumber(serialNumber: string): Promise<AssetItem | null> {
-        return this.assetItemRepository.getItemBySerialNumber(serialNumber);
-    }
+    // async getAssetItemBySerialNumber(assetItemCode: string): Promise<AssetItem | null> {
+    //     return this.assetItemRepository.getItemByAssetItemCode(assetItemCode);
+    // }
 
     async getAssetItemByAssetItemCode(assetItemCode: string): Promise<any | null> {
         return this.assetItemRepository.getItemByAssetItemCode(assetItemCode);

@@ -24,7 +24,6 @@ export function createAssetItemRoutes() {
     router.post('/', (req, res) => assetItemController.create(req, res));
     router.get('/items/:assetId', (req, res) => assetItemController.getAllAssetItems(req, res));
     router.get('/:id', (req, res) => assetItemController.getAssetItemByAssetItemCode(req, res));
-    router.get('/serial-number/:serialNumber', (req, res) => assetItemController.getAssetItemBySerialNumber(req, res));
     router.put('/:id', (req, res) => assetItemController.update(req, res));
     router.delete('/:id', (req, res) => assetItemController.delete(req, res));
 

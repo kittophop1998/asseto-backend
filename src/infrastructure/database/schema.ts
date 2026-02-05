@@ -43,7 +43,7 @@ export interface AssetItemTable {
 export interface AssetRequestTable {
   id: Generated<number>
   code: string
-  serial_number: string
+  asset_item_code: string
   department_id: number
   image_url: string | null
   type: 'REQUEST' | 'RETURN'
@@ -60,7 +60,7 @@ export interface AssetUserTable {
   id: Generated<number>
   user_id: number
   department_id: number
-  serial_number: string
+  asset_item_code: string
   status: string
   assigned_date: Date
   returned_date: Date | null

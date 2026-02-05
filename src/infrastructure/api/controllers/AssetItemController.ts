@@ -49,20 +49,20 @@ export class AssetItemController {
         }
     }
 
-    async getAssetItemBySerialNumber(req: Request, res: Response): Promise<void> {
-        try{
-            const serialNumber = req.params.serialNumber?.toString();
-            if (!serialNumber) {
-                ResponseUtil.error(res, 'Serial number is required', 400);
-                return;
-            }
+    // async getAssetItemBySerialNumber(req: Request, res: Response): Promise<void> {
+    //     try{
+    //         const serialNumber = req.params.serialNumber?.toString();
+    //         if (!serialNumber) {
+    //             ResponseUtil.error(res, 'Serial number is required', 400);
+    //             return;
+    //         }
 
-            const assetItem = await this.assetItemService.getAssetItemBySerialNumber(serialNumber); 
-            ResponseUtil.success(res, assetItem, 'Asset item retrieved successfully');
-        }catch(error: any){
-            ResponseUtil.error(res, error.message || 'Failed to get asset item by serial number', 500);
-        }
-    }
+    //         const assetItem = await this.assetItemService.getAssetItemBySerialNumber(serialNumber); 
+    //         ResponseUtil.success(res, assetItem, 'Asset item retrieved successfully');
+    //     }catch(error: any){
+    //         ResponseUtil.error(res, error.message || 'Failed to get asset item by serial number', 500);
+    //     }
+    // }
 
     async update(req: Request, res: Response): Promise<void> {
         try {

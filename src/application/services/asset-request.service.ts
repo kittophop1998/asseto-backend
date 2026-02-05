@@ -3,7 +3,7 @@ import { IAssetItemRepository } from "../repository/IAssetItemRepositpry";
 import { IAssetRequestRepository } from "../repository/IAssetRequestRepository";
 
 export interface CreateAssetRequestInput {
-    serialNumber: string;
+    assetItemCode: string;
     departmentId: number;
     requesterId: number;
 }
@@ -15,12 +15,12 @@ export class AssetRequestService {
     ) { }
 
     async createAssetRequest(data: CreateAssetRequestInput, type: string): Promise<any> {
-        const existingItem = await this.assetItemRepository.getItemBySerialNumber(data.serialNumber);
+        const existingItem = await this.assetItemRepository.getItemByAssetItemCode(data.assetItemCode);
         if (!existingItem) {
             throw new Error('Asset item not found');
         }
 
-        const existingRequest = await this.assetRequestRepository.getPendingRequestBySerialNumberAndRequesterId(data.serialNumber, data.requesterId);
+        const existingRequest = await this.assetRequestRepository.getPendingRequestByAssetItemCodeAndRequesterId(data.assetItemCode, data.requesterId);
         if (existingRequest) {
             throw new Error('There is already a pending request for this asset by the same requester');
         }
@@ -39,7 +39,7 @@ export class AssetRequestService {
         if (type === 'REQUEST') {
             await this.assetRequestRepository.createAssetUser(
                 data.requesterId,
-                data.serialNumber,
+                data.assetItemCode,
                 data.departmentId,
                 'PENDING'
             );
@@ -54,15 +54,13 @@ export class AssetRequestService {
 
     async getAllAssetRequests(): Promise<any> {
         const requests = await this.assetRequestRepository.getAllRequest();
-
-        // เพิ่ม signed URL สำหรับแสดงรูปภาพจาก S3
         const requestsWithImages = await Promise.all(
             requests.map(async (request: any) => {
                 if (request.imageUrl) {
                     try {
                         const signedUrl = await s3.getSignedDownloadUrl({
                             key: request.imageUrl,
-                            expiresIn: 3600, // URL จะหมดอายุใน 1 ชั่วโมง
+                            expiresIn: 3600,
                         });
                         return {
                             ...request,
@@ -91,7 +89,7 @@ export class AssetRequestService {
             throw new Error('Asset request not found');
         }
 
-        const assetItem = await this.assetItemRepository.getItemBySerialNumber(request.serial_number);
+        const assetItem = await this.assetItemRepository.getItemByAssetItemCode(request.asset_item_code);
         if (!assetItem || !assetItem.id) {
             throw new Error('Asset item not found');
         }
@@ -115,7 +113,7 @@ export class AssetRequestService {
             throw new Error('Asset request not found');
         }
 
-        const assetItem = await this.assetItemRepository.getItemBySerialNumber(request.serial_number);
+        const assetItem = await this.assetItemRepository.getItemByAssetItemCode(request.asset_item_code);
         if (!assetItem || !assetItem.id) {
             throw new Error('Asset item not found');
         }
