@@ -35,7 +35,6 @@ async function migrate() {
 
     console.log('Rollback completed successfully')
   } else {
-    // Migrate to latest
     const { error, results } = await migrator.migrateToLatest()
 
     if (error) {

@@ -5,6 +5,7 @@ import { IAssetRequestRepository } from "../repository/IAssetRequestRepository";
 export interface CreateAssetRequestInput {
     assetItemCode: string;
     departmentId: number;
+    location: number;
     requesterId: number;
 }
 

@@ -118,6 +118,25 @@ async function seed() {
     
     console.log(`✓ Seeded ${departments.length} departments`)
 
+    // Seed Locations
+    console.log('Seeding locations...')
+    await db
+      .insertInto('locations')
+      .values([
+        {
+          name: 'คลังสินค้าหลัก',
+          description: 'คลังสินค้าหลักตั้งอยู่ที่สำนักงานใหญ่',
+          updated_at: new Date(),
+        },
+        {
+          name: 'คลังสินค้าสาขากรุงเทพ',
+          description: 'คลังสินค้าของสาขากรุงเทพ',
+          updated_at: new Date(),
+        }
+      ])
+      .execute();
+    console.log('✓ Seeded locations')
+
     console.log('Database seeding completed successfully! ✓')
   } catch (error) {
     console.error('Error seeding database:', error)

@@ -11,6 +11,7 @@ export interface Database {
   asset_requests: AssetRequestTable
   asset_users: AssetUserTable
   users: UserTable
+  locations: LocationTable
 }
 
 export interface AssetTable {
@@ -45,6 +46,7 @@ export interface AssetRequestTable {
   code: string
   asset_item_code: string
   department_id: number
+  location: number | null
   image_url: string | null
   type: 'REQUEST' | 'RETURN'
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED'
@@ -86,6 +88,14 @@ export interface DepartmentTable {
   updated_at: Date
 }
 
+export interface LocationTable {
+  id: Generated<number>
+  name: string
+  description: string
+  created_at: Generated<Date>
+  updated_at: Date
+}
+
 export interface UserTable {
   id: Generated<number>
   username: string
@@ -107,3 +117,4 @@ export type AssetItems = Selectable<AssetItemTable>
 export type AssetRequests = Selectable<AssetRequestTable>
 export type AssetUsers = Selectable<AssetUserTable>
 export type Users = Selectable<UserTable>
+export type Locations = Selectable<LocationTable>

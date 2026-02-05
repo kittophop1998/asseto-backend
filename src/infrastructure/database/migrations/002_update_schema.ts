@@ -48,6 +48,20 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .execute()
 
+  // Create locations table
+  await db.schema
+    .createTable('locations')
+    .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+    .addColumn('name', 'varchar(255)', (col) => col.notNull())
+    .addColumn('description', 'text', (col) => col.notNull())
+    .addColumn('created_at', 'timestamp', (col) =>
+      col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
+    )
+    .addColumn('updated_at', 'timestamp', (col) =>
+      col.defaultTo(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
+    )
+    .execute()
+
   // Create users table
   await db.schema
     .createTable('users')
@@ -142,6 +156,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('code', 'varchar(50)', (col) => col.notNull().unique())
     .addColumn('asset_item_code', 'varchar(255)', (col) => col.notNull())
     .addColumn('department_id', 'integer', (col) => col.notNull())
+    .addColumn('localtion', 'varchar(255)', (col) => col.notNull())
     .addColumn('image_url', 'varchar(500)')
     .addColumn('type', 'varchar(50)', (col) => col.notNull()) // REQUEST or RETURN
     .addColumn('status', 'varchar(50)', (col) => col.notNull().defaultTo('PENDING')) // PENDING, APPROVED, REJECTED, CANCELLED

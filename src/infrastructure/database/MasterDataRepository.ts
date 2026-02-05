@@ -19,4 +19,13 @@ export class MasterDataRepository implements IMasterDataRepository {
 
         return categories;
     }
+
+    async getLocation(): Promise<any> {
+        const locations = await db
+            .selectFrom('locations')
+            .selectAll()
+            .execute();
+
+        return locations;
+    }
 }

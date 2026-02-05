@@ -25,6 +25,7 @@ export class AssetRequestController {
             const input = {
                 assetItemCode: req.body.assetItemCode,
                 departmentId: departmentId,
+                location: Number(req.body.location) ?? 0,
                 requesterId: userId
             };
 
@@ -120,6 +121,7 @@ export class AssetRequestController {
             const input = {
                 assetItemCode: req.body.assetItemCode ?? '',
                 departmentId: Number(req.user?.department_id) ?? 0,
+                location: req.body.location ?? '',
                 requesterId: Number(req.user?.id) ?? 0
             };
 

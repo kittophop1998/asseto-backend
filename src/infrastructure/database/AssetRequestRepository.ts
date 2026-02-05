@@ -11,6 +11,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
                 type: input.type,
                 asset_item_code: input.assetItemCode ?? '',
                 department_id: input.departmentId,
+                location: input.location ?? 0,
                 status: input.status,
                 requester_id: input.requesterId ?? 1,
                 request_date: dayjs().toDate(),
@@ -31,6 +32,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
             .leftJoin('asset_items', 'asset_requests.asset_item_code', 'asset_items.asset_code')
             .innerJoin('assets', 'asset_items.asset_id', 'assets.id')
             .innerJoin('users as requester', 'asset_requests.requester_id', 'requester.id')
+            .leftJoin('locations', 'asset_requests.location', 'locations.id')
             .leftJoin('asset_users', (join) => join
                 .onRef('asset_users.asset_item_code', '=', 'asset_requests.asset_item_code')
                 .onRef('asset_users.user_id', '=', 'asset_requests.requester_id')
@@ -52,6 +54,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
                 'asset_requests.id as requestId',
                 'asset_requests.code as requestCode',
                 'asset_requests.type as requestType',
+                'locations.name as locationName',
                 'departments.name as departmentName',
                 'asset_requests.status as status',
                 'asset_requests.image_url as imageUrl',
