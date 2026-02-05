@@ -36,7 +36,7 @@ export class AssetItemService {
         return this.assetItemRepository.getItemByAssetItemCode(assetItemCode);
     }
 
-    async update(id: number, input: any): Promise<void> {
+    async update(assetCode: string, input: any): Promise<void> {
         const inputUpdate = {
             asset_code_ac: input.assetCodeAC,
             asset_code: input.assetCode,
@@ -45,6 +45,6 @@ export class AssetItemService {
             warranty_end_date: input.warrantyEnd
         };
         
-        await this.assetItemRepository.updateAssetItem(id, inputUpdate);
+        await this.assetItemRepository.updateAssetItem(assetCode, inputUpdate);
     }
 }

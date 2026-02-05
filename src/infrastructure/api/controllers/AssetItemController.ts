@@ -66,13 +66,13 @@ export class AssetItemController {
 
     async update(req: Request, res: Response): Promise<void> {
         try {
-            const id = Number(req.params.id);
-            if (!id) {
+            const assetCode = req.params?.id.toString();
+            if (!assetCode) {
                 ResponseUtil.error(res, 'Asset item ID is required', 400);
                 return;
             }
 
-            await this.assetItemService.update(id, req.body);
+            await this.assetItemService.update(assetCode, req.body);
             ResponseUtil.success(res, null, 'Asset item updated successfully');
         }   catch (error: any) {
             ResponseUtil.error(res, error.message || 'Failed to update asset item', 500);

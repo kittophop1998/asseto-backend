@@ -76,14 +76,14 @@ export class AssetItemRepository implements IAssetItemRepository {
         return assetItems;
     }
 
-    async updateAssetItem(id: number, input: any): Promise<void> {
+    async updateAssetItem(assetCode: string, input: any): Promise<void> {
         await db
             .updateTable('asset_items')
             .set({
                 ...input,
                 updated_at: dayjs().toDate(),
             })
-            .where('id', '=', id)
+            .where('asset_code', '=', assetCode)
             .execute();
     }
 
