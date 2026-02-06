@@ -145,14 +145,149 @@ async function seed() {
         .insertInto('locations')
         .values([
           {
-            name: 'คลังสินค้าหลัก',
-            description: 'คลังสินค้าหลักตั้งอยู่ที่สำนักงานใหญ่',
-            updated_at: new Date(),
+            "name": "Main store (โกดัง 40)",
+            "description": "Main store (โกดัง 40)",
+            "updated_at": new Date()
           },
           {
-            name: 'คลังสินค้าสาขากรุงเทพ',
-            description: 'คลังสินค้าของสาขากรุงเทพ',
-            updated_at: new Date(),
+            "name": "ONLINE (STO)",
+            "description": "ONLINE (STO)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (JJ1)",
+            "description": "100 Baht Shop (JJ1)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (JJ2)",
+            "description": "100 Baht Shop (JJ2)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "Checkin Lowprice (CL)",
+            "description": "Checkin Lowprice (CL)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (PTN)",
+            "description": "100 Baht Shop (PTN)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (KB)",
+            "description": "100 Baht Shop (KB)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (CBR)",
+            "description": "100 Baht Shop (CBR)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "ศรีฟ้า",
+            "description": "ศรีฟ้า",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100BAHTSHOP (SAMUI)",
+            "description": "100BAHTSHOP (SAMUI)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "DRUG CENTER SAMUI",
+            "description": "DRUG CENTER SAMUI",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (MPN)",
+            "description": "100 Baht Shop (MPN)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "_DEMO หน้าร้าน",
+            "description": "_DEMO หน้าร้าน",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (JJ3)",
+            "description": "100 Baht Shop (JJ3)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (JJ5)",
+            "description": "100 Baht Shop (JJ5)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "_DEMO คลังใหญ่",
+            "description": "_DEMO คลังใหญ่",
+            "updated_at": new Date()
+          },
+          {
+            "name": "Chemist Pharmacy (CMP)",
+            "description": "Chemist Pharmacy (CMP)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "สำนักงานใหญ่",
+            "description": "สำนักงานใหญ่",
+            "updated_at": new Date()
+          },
+          {
+            "name": "ราคาแนะนำขาย Sticker price",
+            "description": "ราคาแนะนำขาย Sticker price",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (JJ8)",
+            "description": "100 Baht Shop (JJ8)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "ห้องผลิตสินค้า OTOP",
+            "description": "ห้องผลิตสินค้า OTOP",
+            "updated_at": new Date()
+          },
+          {
+            "name": "โกดังคืนสินค้า",
+            "description": "โกดังคืนสินค้า",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (JF1)",
+            "description": "100 Baht Shop (JF1)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (ITS)",
+            "description": "100 Baht Shop (ITS)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "Chemist Pharmacy (SBY)",
+            "description": "Chemist Pharmacy (SBY)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (MPN2)",
+            "description": "100 Baht Shop (MPN2)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (SPL)",
+            "description": "100 Baht Shop (SPL)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (JJP)",
+            "description": "100 Baht Shop (JJP)",
+            "updated_at": new Date()
+          },
+          {
+            "name": "100 Baht Shop (SSK)",
+            "description": "100 Baht Shop (SSK)",
+            "updated_at": new Date()
           }
         ])
         .execute()
