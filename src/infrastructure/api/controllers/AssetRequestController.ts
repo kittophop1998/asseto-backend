@@ -37,11 +37,24 @@ export class AssetRequestController {
         }
     }
 
-    async getAllRequests(_: Request, res: Response) {
+    async getAllRequests(req: Request, res: Response) {
         try {
-            const requests = await this.assetRequestService.getAllAssetRequests();
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 5;
 
-            ResponseUtil.success(res, requests, ' Asset requests retrieved successfully', 200);
+            const filter = {
+                page,
+                limit
+            };
+            const {data, totalItems} = await this.assetRequestService.getAllAssetRequests(filter);
+            const pagination = {
+                page: page,
+                limit: limit,
+                totalItems: totalItems,
+                totalPages: Math.ceil(totalItems / limit)
+            };
+
+            ResponseUtil.successWithPagination(res, data, pagination, ' Asset requests retrieved successfully', 200);
         } catch (error: any) {
             ResponseUtil.error(res, ' Failed to get asset requests', 500, error);
         }

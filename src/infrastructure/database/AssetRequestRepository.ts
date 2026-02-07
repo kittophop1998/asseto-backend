@@ -25,7 +25,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
         return input;
     }
 
-    async getAllRequest(id?: number, status?:string): Promise<any> {
+    async getAllRequest(filter: any): Promise<any> {
         let query = await db
             .selectFrom('asset_requests')
             .innerJoin('departments', 'asset_requests.department_id', 'departments.id')
@@ -39,12 +39,19 @@ export class AssetRequestRepository implements IAssetRequestRepository {
                 .on('asset_users.returned_date', 'is', null)
             )
 
-        if (id) {
-            query = query.where('asset_requests.requester_id', '=', id);
+        if (filter?.page && filter?.limit) {
+            const page = parseInt(filter.page) || 1;
+            const limit = parseInt(filter.limit) || 10;
+            const offset = (page - 1) * limit;
+            query = query.offset(offset).limit(limit);
         }
 
-        if (status) {
-            query = query.where('asset_requests.status', '=', status as 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED');
+        if (filter?.id) {
+            query = query.where('asset_requests.requester_id', '=', filter.id);
+        }
+
+        if (filter?.status) {
+            query = query.where('asset_requests.status', '=', filter.status as 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED');
         }
 
         query = query.orderBy('asset_requests.created_at', 'desc');
@@ -69,7 +76,18 @@ export class AssetRequestRepository implements IAssetRequestRepository {
             ])
             .execute();
 
-        return requests;
+        // Get total count
+        const totalRequests = await db
+            .selectFrom('asset_requests')
+            .select([
+                db.fn.count<number>('asset_requests.id').as('total')
+            ])
+            .execute();
+
+        return {
+            data: requests,
+            totalItems: totalRequests[0].total ?? 0,
+        };
     }
 
     async getLastRequestCode(): Promise<string | null> {
@@ -127,11 +145,11 @@ export class AssetRequestRepository implements IAssetRequestRepository {
     }
 
     async createAssetUser(
-        userId: number, 
-        assetItemCode: string, 
+        userId: number,
+        assetItemCode: string,
         departmentId: number,
         status: string
-    ) : Promise<void> {
+    ): Promise<void> {
         await db
             .insertInto('asset_users')
             .values({
@@ -216,7 +234,7 @@ export class AssetRequestRepository implements IAssetRequestRepository {
         return request;
     }
 
-    async update(input:any): Promise<void> {
+    async update(input: any): Promise<void> {
         await db
             .updateTable('asset_requests')
             .set({

@@ -53,10 +53,10 @@ export class AssetRequestService {
         await this.assetRequestRepository.updateAssetUserById(assetUserId, 'PENDING_RETURN');
     }
 
-    async getAllAssetRequests(): Promise<any> {
-        const requests = await this.assetRequestRepository.getAllRequest();
+    async getAllAssetRequests(filter: any): Promise<any> {
+        const {data, totalItems} = await this.assetRequestRepository.getAllRequest(filter);
         const requestsWithImages = await Promise.all(
-            requests.map(async (request: any) => {
+            data.map(async (request: any) => {
                 if (request.imageUrl) {
                     try {
                         const signedUrl = await s3.getSignedDownloadUrl({
@@ -76,7 +76,10 @@ export class AssetRequestService {
             })
         );
 
-        return requestsWithImages;
+        return {
+            data: requestsWithImages,
+            totalItems: totalItems
+        };
     }
 
     async getMyAssetFormRequest(id: number): Promise<any> {

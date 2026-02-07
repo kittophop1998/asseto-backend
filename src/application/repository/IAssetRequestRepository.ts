@@ -1,5 +1,5 @@
 export interface IAssetRequestRepository {
-    getAllRequest(id?: number, status?: string): Promise<any>
+    getAllRequest(filter?: any): Promise<any>
     create(input: any): Promise<any>
     getLastRequestCode(): Promise<string | null>
     updateStatus(
@@ -14,5 +14,5 @@ export interface IAssetRequestRepository {
     updateAssetUserReturnDate(userId: number, serialNumber: string): Promise<void>;
     updateAssetUserById(id: number, status: string): Promise<void>;
     getPendingRequestByAssetItemCodeAndRequesterId(assetItemCode: string, requesterId: number): Promise<any>;
-    update(input:any): Promise<void>;
+    update(input: any): Promise<void>;
 }
