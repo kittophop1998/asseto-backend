@@ -37,6 +37,23 @@ export class AssetRequestController {
         }
     }
 
+    async createAssetReturnRequest(req: Request, res: Response) {
+        try {
+            const userId = Number(req.user?.id);
+            if(!userId) {
+                ResponseUtil.error(res, 'User not authenticated', 401);
+                return;
+            }
+            const assetItemCode = req.body.assetItemCode;
+
+            await this.assetRequestService.createAssetReturnRequest(userId, assetItemCode);
+
+            ResponseUtil.created(res, 'Asset return request created successfully');
+        }catch(error: any) {
+            ResponseUtil.error(res, ' Failed to create asset return request', 500, error.message);
+        }
+    }
+
     async getAllRequests(req: Request, res: Response) {
         try {
             const page = parseInt(req.query.page as string) || 1;

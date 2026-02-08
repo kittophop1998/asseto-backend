@@ -34,6 +34,12 @@ async function seed() {
             description: 'อุปกรณ์สำนักงานทั่วไป เช่น เครื่องพิมพ์ เครื่องสแกน',
             updated_at: new Date(),
           },
+          {
+            name: 'เบิกใช้แล้วหมดไป',
+            prefix: 'OUT',
+            description: 'วัสดุสิ้นเปลืองที่ใช้แล้วหมดไป เช่น กระดาษ ปากกา หมึกพิมพ์',
+            updated_at: new Date(),
+          }
         ])
         .execute()
 

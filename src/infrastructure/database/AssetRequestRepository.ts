@@ -144,6 +144,16 @@ export class AssetRequestRepository implements IAssetRequestRepository {
         return request;
     }
 
+    async getRequestByAssetItemCode(assetItemCode: string): Promise<any> {
+        const request = await db
+            .selectFrom('asset_requests')
+            .selectAll()
+            .where('asset_item_code', '=', assetItemCode.trim())
+            .executeTakeFirst();
+
+        return request;
+    }
+
     async createAssetUser(
         userId: number,
         assetItemCode: string,

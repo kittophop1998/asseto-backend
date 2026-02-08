@@ -15,7 +15,7 @@ export class AssetRequestService {
         private assetItemRepository: IAssetItemRepository
     ) { }
 
-    async createAssetRequest(data: CreateAssetRequestInput, type: string): Promise<any> {
+    async createAssetRequest(data: CreateAssetRequestInput, type: string) {
         const existingItem = await this.assetItemRepository.getItemByAssetItemCode(data.assetItemCode);
         if (!existingItem) {
             throw new Error('Asset item not found');
@@ -47,6 +47,28 @@ export class AssetRequestService {
         }
 
         return request;
+    }
+
+    async createAssetReturnRequest(requesterId: number, assetItemCode: string) {
+        const existingRequest = await this.assetRequestRepository.getRequestByAssetItemCode(assetItemCode);
+        if (!existingRequest) {
+            throw new Error('Asset item not found');
+        }
+
+        const lastCode = await this.assetRequestRepository.getLastRequestCode();
+
+        const input = {
+            assetItemCode: assetItemCode,
+            departmentId: existingRequest.department_id,
+            location: existingRequest.location,
+            requesterId: requesterId,
+            status: 'PENDING',
+            code: this.generateAssetRequestCode('AR-', lastCode ? parseInt(lastCode.replace('AR-', '')) : 0),
+            type: 'RETURN'
+        };
+        
+        await this.assetRequestRepository.updateAssetUserStatus(requesterId, assetItemCode, 'PENDING_RETURN');
+        await this.assetRequestRepository.create(input);
     }
 
     async processReturn(assetUserId: number): Promise<void> {
@@ -99,14 +121,14 @@ export class AssetRequestService {
         }
 
         if (type === 'REQUEST') {
-            await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.serial_number, 'APPROVED');
-            await this.assetItemRepository.updateAssetItem(assetItem.id.toString(), {status: 'IN_USE'});
-            await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.serial_number, 'APPROVED');
+            await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.asset_item_code, 'APPROVED');
+            await this.assetItemRepository.updateAssetItem(assetItem.assetCode.toString(), {status: 'IN_USE'});
+            await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.asset_item_code, 'APPROVED');
             await this.assetRequestRepository.updateStatus(code, 'APPROVED');
         } else if (type === 'RETURN') {
-            await this.assetRequestRepository.updateAssetUserReturnDate(request.requester_id, request.serial_number);
-            await this.assetItemRepository.updateAssetItem(assetItem.id.toString(), {status: 'AVAILABLE'});
-            await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.serial_number, 'RETURNED');
+            await this.assetRequestRepository.updateAssetUserReturnDate(request.requester_id, request.asset_item_code);
+            await this.assetItemRepository.updateAssetItem(assetItem.assetCode.toString(), {status: 'AVAILABLE'});
+            await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.asset_item_code, 'RETURNED');
             await this.assetRequestRepository.updateStatus(code, 'APPROVED');
         }
     }

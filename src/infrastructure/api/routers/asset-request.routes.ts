@@ -52,6 +52,7 @@ export function createAssetRequestRoutes() {
     router.post('/upload', upload.single('image'), (req, res) => assetRequestController.uploadRequestImage(req, res));
     router.get('/', (req, res) => assetRequestController.getAllRequests(req, res));
     router.post('/', authMiddleware, (req, res) => assetRequestController.createAssetRequest(req, res));
+    router.post('/return', authMiddleware, (req, res) => assetRequestController.createAssetReturnRequest(req, res));
 
     return router;
 }
