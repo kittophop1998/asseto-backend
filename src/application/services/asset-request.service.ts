@@ -5,6 +5,7 @@ import { IAssetRequestRepository } from "../repository/IAssetRequestRepository";
 export interface CreateAssetRequestInput {
     assetItemCode: string;
     departmentId: number;
+    quantity: number;
     location: number;
     requesterId: number;
 }
@@ -15,64 +16,71 @@ export class AssetRequestService {
         private assetItemRepository: IAssetItemRepository
     ) { }
 
-    async createAssetRequest(data: CreateAssetRequestInput, type: string) {
-        const existingItem = await this.assetItemRepository.getItemByAssetItemCode(data.assetItemCode);
-        if (!existingItem) {
-            throw new Error('Asset item not found');
-        }
-
+    async createAssetRequest(data: CreateAssetRequestInput) {
         const existingRequest = await this.assetRequestRepository.getPendingRequestByAssetItemCodeAndRequesterId(data.assetItemCode, data.requesterId);
         if (existingRequest) {
             throw new Error('There is already a pending request for this asset by the same requester');
+        }
+
+        const isQtyAvailable = await this.assetItemRepository.checkQtyAvailable(data.assetItemCode, data.quantity);
+        if (!isQtyAvailable) {
+            throw new Error('REQUEST_QTY_EXCEEDS_AVAILABLE');
         }
 
         const lastCode = await this.assetRequestRepository.getLastRequestCode();
         const code = this.generateAssetRequestCode('AR-', lastCode ? parseInt(lastCode.replace('AR-', '')) : 0);
 
         const input = {
-            ...data,
-            status: 'PENDING',
             code: code,
-            type: type.toLocaleUpperCase()
+            type: 'REQUEST',
+            asset_item_code: data.assetItemCode,
+            department_id: data.departmentId,
+            location: data.location,
+            status: 'PENDING',
+            requester_id: data.requesterId,
+            quantity: data.quantity,
+            approver_id: null,
+            approval_date: null,
         };
         const request = await this.assetRequestRepository.create(input);
 
-        if (type === 'REQUEST') {
-            await this.assetRequestRepository.createAssetUser(
-                data.requesterId,
-                data.assetItemCode,
-                data.departmentId,
-                'PENDING'
-            );
+        if (input.type === 'REQUEST') {
+            const inputAssetUser = {
+                assetItemCode: data.assetItemCode,
+                departmentId: data.departmentId,
+                userId: data.requesterId,
+                quantity: data.quantity,
+                status: 'PENDING',
+            };
+
+            await this.assetRequestRepository.createAssetUser(inputAssetUser);
         }
 
         return request;
     }
 
-    async createAssetReturnRequest(requesterId: number, assetItemCode: string) {
-        const existingRequest = await this.assetRequestRepository.getRequestByAssetItemCode(assetItemCode);
+    async createAssetReturnRequest(data: any) {
+        const existingRequest = await this.assetRequestRepository.getRequestByAssetItemCode(data.assetItemCode);
         if (!existingRequest) {
             throw new Error('Asset item not found');
         }
 
         const lastCode = await this.assetRequestRepository.getLastRequestCode();
-
+        const code = this.generateAssetRequestCode('AR-', lastCode ? parseInt(lastCode.replace('AR-', '')) : 0);
+        
         const input = {
-            assetItemCode: assetItemCode,
+            code: code,
+            assetItemCode: data.assetItemCode,
+            quantity: existingRequest.quantity,
             departmentId: existingRequest.department_id,
             location: existingRequest.location,
-            requesterId: requesterId,
+            requesterId: data.requesterId,
             status: 'PENDING',
-            code: this.generateAssetRequestCode('AR-', lastCode ? parseInt(lastCode.replace('AR-', '')) : 0),
             type: 'RETURN'
         };
         
-        await this.assetRequestRepository.updateAssetUserStatus(requesterId, assetItemCode, 'PENDING_RETURN');
+        await this.assetRequestRepository.updateAssetUserStatus(data.requesterId, data.assetItemCode, 'PENDING_RETURN');
         await this.assetRequestRepository.create(input);
-    }
-
-    async processReturn(assetUserId: number): Promise<void> {
-        await this.assetRequestRepository.updateAssetUserById(assetUserId, 'PENDING_RETURN');
     }
 
     async getAllAssetRequests(filter: any): Promise<any> {

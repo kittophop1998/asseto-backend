@@ -24,7 +24,9 @@ export interface CreateAssetRequest {
 }
 
 export class AssetService {
-  constructor(private assetRepository: IAssetRepository) {}
+  constructor(
+    private assetRepository: IAssetRepository
+  ) {}
 
   async createAsset(input: CreateAssetRequest): Promise<void> {
     return await this.assetRepository.create(input);

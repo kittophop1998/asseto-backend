@@ -7,16 +7,8 @@ export class AssetRequestRepository implements IAssetRequestRepository {
         await db
             .insertInto('asset_requests')
             .values({
-                code: input.code,
-                type: input.type,
-                asset_item_code: input.assetItemCode ?? '',
-                department_id: input.departmentId,
-                location: input.location ?? 0,
-                status: input.status,
-                requester_id: input.requesterId ?? 1,
+                ...input,
                 request_date: dayjs().toDate(),
-                approver_id: null,
-                approval_date: null,
                 created_at: dayjs().toDate(),
                 updated_at: dayjs().toDate(),
             })
@@ -154,21 +146,17 @@ export class AssetRequestRepository implements IAssetRequestRepository {
         return request;
     }
 
-    async createAssetUser(
-        userId: number,
-        assetItemCode: string,
-        departmentId: number,
-        status: string
-    ): Promise<void> {
+    async createAssetUser(input: any): Promise<void> {
         await db
             .insertInto('asset_users')
             .values({
-                user_id: userId,
-                asset_item_code: assetItemCode,
-                department_id: departmentId,
-                status: status,
-                assigned_date: dayjs().toDate(),
+                user_id: input.userId,
+                asset_item_code: input.assetItemCode,
+                quantity: input.quantity,
+                department_id: input.departmentId,
                 returned_date: null,
+                status: input.status,
+                assigned_date: dayjs().toDate(),
                 created_at: dayjs().toDate(),
                 updated_at: dayjs().toDate(),
             })

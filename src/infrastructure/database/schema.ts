@@ -34,6 +34,7 @@ export interface AssetItemTable {
   asset_code_ac: string
   asset_code: string
   serial_number: string
+  quantity: number
   status: 'AVAILABLE' | 'IN_USE' | 'UNDER_MAINTENANCE' | 'RETIRED'
   purchase_date: Date
   warranty_end_date: Date
@@ -45,11 +46,12 @@ export interface AssetRequestTable {
   id: Generated<number>
   code: string
   asset_item_code: string
+  quantity: number
   department_id: number
   location: number | null
   image_url: string | null
   type: 'REQUEST' | 'RETURN'
-  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED'
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED' | 'RETURNED'
   requester_id: number
   request_date: Date
   approver_id: number | null
@@ -63,6 +65,7 @@ export interface AssetUserTable {
   user_id: number
   department_id: number
   asset_item_code: string
+  quantity: number
   status: string
   assigned_date: Date
   returned_date: Date | null
@@ -92,6 +95,7 @@ export interface LocationTable {
   id: Generated<number>
   name: string
   description: string
+  is_active: number
   created_at: Generated<Date>
   updated_at: Date
 }

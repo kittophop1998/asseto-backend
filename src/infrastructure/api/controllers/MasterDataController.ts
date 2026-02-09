@@ -13,7 +13,7 @@ export class MasterDataController {
 
             ResponseUtil.success(res, masterData, ' Master data retrieved successfully', 200);
         } catch (error: any) {
-            ResponseUtil.error(res, ' Failed to get master data', 500, error);
+            ResponseUtil.error(res, error.message || 'Failed to get master data', 500, 'GET_MASTER_DATA_FAILED');
         }
     }
 }

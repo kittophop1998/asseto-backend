@@ -12,11 +12,14 @@ export interface ApiResponse<T = unknown> {
     message?: string;
     data?: T;
     pagination?: PaginationMeta;
-    error?: {
-        code?: string;
-        details?: unknown;
-    };
     timestamp: string;
+}
+
+export interface ApiErrorResponse {
+    error: {
+        code: string;
+        message: string;
+    };
 }
 
 export class ResponseUtil {
@@ -88,17 +91,13 @@ export class ResponseUtil {
         res: Response,
         message: string,
         statusCode: number = 500,
-        errorCode?: string,
-        details?: unknown
+        errorCode: string = 'INTERNAL_ERROR'
     ): Response {
-        const response: ApiResponse = {
-            success: false,
-            message,
+        const response: ApiErrorResponse = {
             error: {
                 code: errorCode,
-                details,
+                message,
             },
-            timestamp: new Date().toISOString(),
         };
 
         return res.status(statusCode).json(response);
@@ -110,9 +109,9 @@ export class ResponseUtil {
     static badRequest(
         res: Response,
         message: string = 'Bad request',
-        details?: unknown
+        errorCode: string = 'BAD_REQUEST'
     ): Response {
-        return this.error(res, message, 400, 'BAD_REQUEST', details);
+        return this.error(res, message, 400, errorCode);
     }
 
     /**
@@ -120,9 +119,10 @@ export class ResponseUtil {
      */
     static unauthorized(
         res: Response,
-        message: string = 'Unauthorized'
+        message: string = 'Unauthorized',
+        errorCode: string = 'UNAUTHORIZED'
     ): Response {
-        return this.error(res, message, 401, 'UNAUTHORIZED');
+        return this.error(res, message, 401, errorCode);
     }
 
     /**
@@ -130,9 +130,10 @@ export class ResponseUtil {
      */
     static forbidden(
         res: Response,
-        message: string = 'Forbidden'
+        message: string = 'Forbidden',
+        errorCode: string = 'FORBIDDEN'
     ): Response {
-        return this.error(res, message, 403, 'FORBIDDEN');
+        return this.error(res, message, 403, errorCode);
     }
 
     /**
@@ -140,9 +141,10 @@ export class ResponseUtil {
      */
     static notFound(
         res: Response,
-        message: string = 'Resource not found'
+        message: string = 'Resource not found',
+        errorCode: string = 'NOT_FOUND'
     ): Response {
-        return this.error(res, message, 404, 'NOT_FOUND');
+        return this.error(res, message, 404, errorCode);
     }
 
     /**
@@ -151,9 +153,9 @@ export class ResponseUtil {
     static conflict(
         res: Response,
         message: string = 'Resource already exists',
-        details?: unknown
+        errorCode: string = 'CONFLICT'
     ): Response {
-        return this.error(res, message, 409, 'CONFLICT', details);
+        return this.error(res, message, 409, errorCode);
     }
 
     /**
@@ -162,9 +164,9 @@ export class ResponseUtil {
     static validationError(
         res: Response,
         message: string = 'Validation failed',
-        details?: unknown
+        errorCode: string = 'VALIDATION_ERROR'
     ): Response {
-        return this.error(res, message, 422, 'VALIDATION_ERROR', details);
+        return this.error(res, message, 422, errorCode);
     }
 
     /**
@@ -173,8 +175,8 @@ export class ResponseUtil {
     static internalError(
         res: Response,
         message: string = 'Internal server error',
-        details?: unknown
+        errorCode: string = 'INTERNAL_ERROR'
     ): Response {
-        return this.error(res, message, 500, 'INTERNAL_ERROR', details);
+        return this.error(res, message, 500, errorCode);
     }
 }

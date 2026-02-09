@@ -13,7 +13,7 @@ export class AssetItemController {
 
             ResponseUtil.created(res, 'Asset item created successfully');
         } catch (error: any) {
-            ResponseUtil.error(res, error.message || 'Failed to create asset item', 500);
+            ResponseUtil.error(res, error.message || 'Failed to create asset item', 500, 'CREATE_ASSET_ITEM_FAILED');
         }
     }
 
@@ -21,7 +21,7 @@ export class AssetItemController {
         try {
             const assetId = Number(req.params.assetId);
             if (!assetId) {
-                ResponseUtil.error(res, 'Asset ID is required', 400);
+                ResponseUtil.error(res, 'Asset ID is required', 400, 'ASSET_ID_REQUIRED');
                 return;
             }
 
@@ -29,7 +29,7 @@ export class AssetItemController {
 
             ResponseUtil.success(res, assetItems, 'Asset items retrieved successfully');
         } catch (error: any) {
-            ResponseUtil.error(res, error.message || 'Failed to retrieve asset items', 500);
+            ResponseUtil.error(res, error.message || 'Failed to retrieve asset items', 500, 'GET_ASSET_ITEMS_FAILED');
         }
     }
 
@@ -37,7 +37,7 @@ export class AssetItemController {
         try {
             const id = Number(req.params.id);
             if (!id) {
-                ResponseUtil.error(res, 'Asset item ID is required', 400);
+                ResponseUtil.error(res, 'Asset item ID is required', 400, 'ASSET_ITEM_ID_REQUIRED');
                 return;
             }
 
@@ -45,7 +45,7 @@ export class AssetItemController {
 
             ResponseUtil.success(res, null, 'Asset item deleted successfully');
         } catch (error: any) {
-            ResponseUtil.error(res, error.message || 'Failed to delete asset item', 500);
+            ResponseUtil.error(res, error.message || 'Failed to delete asset item', 500, 'DELETE_ASSET_ITEM_FAILED');
         }
     }
 
@@ -68,14 +68,14 @@ export class AssetItemController {
         try {
             const assetCode = req.params?.id.toString();
             if (!assetCode) {
-                ResponseUtil.error(res, 'Asset item ID is required', 400);
+                ResponseUtil.error(res, 'Asset item ID is required', 400, 'ASSET_ITEM_ID_REQUIRED');
                 return;
             }
 
             await this.assetItemService.update(assetCode, req.body);
             ResponseUtil.success(res, null, 'Asset item updated successfully');
         }   catch (error: any) {
-            ResponseUtil.error(res, error.message || 'Failed to update asset item', 500);
+            ResponseUtil.error(res, error.message || 'Failed to update asset item', 500, 'UPDATE_ASSET_ITEM_FAILED');
         }     
     }
 
@@ -83,14 +83,14 @@ export class AssetItemController {
         try {
             const assetItemCode = req.params.id?.toString();
             if (!assetItemCode) {
-                ResponseUtil.error(res, 'Asset item code is required', 400);
+                ResponseUtil.error(res, 'Asset item code is required', 400, 'ASSET_ITEM_CODE_REQUIRED');
                 return;
             }
 
             const assetItem = await this.assetItemService.getAssetItemByAssetItemCode(assetItemCode);
             ResponseUtil.success(res, assetItem, 'Asset item retrieved successfully');
         } catch (error: any) {
-            ResponseUtil.error(res, error.message || 'Failed to get asset item by asset item code', 500);
+            ResponseUtil.error(res, error.message || 'Failed to get asset item by asset item code', 500, 'GET_ASSET_ITEM_BY_CODE_FAILED');
         }
     }
 }

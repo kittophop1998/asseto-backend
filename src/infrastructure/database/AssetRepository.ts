@@ -30,6 +30,7 @@ export class AssetRepository implements IAssetRepository {
         let query = db
             .selectFrom('assets')
             .leftJoin('asset_items', 'asset_items.asset_id', 'assets.id')
+            .leftJoin('asset_requests', 'asset_requests.asset_item_code', 'asset_items.asset_code')
             .leftJoin('categories', 'categories.id', 'assets.category_id')
             .leftJoin('departments', 'departments.id', 'assets.department_id')
             .where('assets.deleted_at', 'is', null);
@@ -52,10 +53,11 @@ export class AssetRepository implements IAssetRepository {
             'assets.status',
             'assets.department_id',
             'departments.name as department_name',
+            sql<number>`CAST(COALESCE(asset_items.quantity, 0) AS SIGNED)`.as('total_qty'),
+            sql<number>`CAST(COALESCE(SUM(asset_requests.quantity), 0) AS SIGNED)`.as('requested_qty'),
+            sql<number>`CAST(COALESCE(asset_items.quantity, 0) - COALESCE(SUM(asset_requests.quantity), 0) AS SIGNED)`.as('available_qty'),
             'assets.created_at',
             'assets.updated_at',
-            db.fn.count<number>('asset_items.id').as('total_quantity'),
-            sql<string>`SUM(CASE WHEN asset_items.status = 'AVAILABLE' THEN 1 ELSE 0 END)`.as('available_quantity'),
         ]).groupBy('assets.id').offset(skip).limit(limit).execute();
 
         const totalResult = await db.selectFrom('assets').select(db.fn.count<number>('id').as('count')).executeTakeFirst();

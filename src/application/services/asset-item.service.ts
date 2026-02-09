@@ -6,6 +6,7 @@ export interface CreateAssetItemRequest {
     assetCodeAC: string;
     assetCode: string;
     serialNumber: string;
+    quantity: number;
     purchaseDate: string;
     warrantyEnd: string;
 }
@@ -27,10 +28,6 @@ export class AssetItemService {
     async deleteAssetItem(id: number): Promise<void> {
         await this.assetItemRepository.deleteItem(id);
     }
-
-    // async getAssetItemBySerialNumber(assetItemCode: string): Promise<AssetItem | null> {
-    //     return this.assetItemRepository.getItemByAssetItemCode(assetItemCode);
-    // }
 
     async getAssetItemByAssetItemCode(assetItemCode: string): Promise<any | null> {
         return this.assetItemRepository.getItemByAssetItemCode(assetItemCode);

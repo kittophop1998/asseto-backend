@@ -13,7 +13,7 @@ export class UserController {
             
             ResponseUtil.success(res, users, ' Users retrieved successfully', 200);
         }catch(error:any) {
-            ResponseUtil.error(res, ' Failed to get users', 500, error);
+            ResponseUtil.error(res, error.message || 'Failed to get users', 500, 'GET_USERS_FAILED');
         }
     }
 
@@ -26,7 +26,7 @@ export class UserController {
 
             ResponseUtil.success(res, null, ' User updated successfully', 200);
         }catch(error:any) {
-            ResponseUtil.error(res, ' Failed to update user', 500, error);
+            ResponseUtil.error(res, error.message || 'Failed to update user', 500, 'UPDATE_USER_FAILED');
         }
     }
 
@@ -37,7 +37,7 @@ export class UserController {
 
             ResponseUtil.success(res, profile, ' Profile retrieved successfully', 200);
         }catch(error:any) {
-            ResponseUtil.error(res, ' Failed to get profile', 500, error);
+            ResponseUtil.error(res, error.message || 'Failed to get profile', 500, 'GET_PROFILE_FAILED');
         }
     }
 }

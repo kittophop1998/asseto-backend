@@ -13,7 +13,7 @@ export class AssetController {
 
             ResponseUtil.created(res, asset, 'Asset created successfully');
         } catch (error: any) {
-            ResponseUtil.error(res, error.message || 'Failed to create asset', 500);
+            ResponseUtil.error(res, error.message || 'Failed to create asset', 500, 'CREATE_ASSET_FAILED');
         }
     }
 
@@ -36,7 +36,7 @@ export class AssetController {
 
             ResponseUtil.successWithPagination(res, assets.data, assets.pagination, 'Assets retrieved successfully');
         } catch (error: any) {
-            ResponseUtil.error(res, error.message || 'Failed to get assets', 500);
+            ResponseUtil.error(res, error.message || 'Failed to get assets', 500, 'GET_ASSETS_FAILED');
         }
     }
 
@@ -47,7 +47,7 @@ export class AssetController {
 
             ResponseUtil.success(res, asset, 'Asset retrieved successfully');
         } catch (error: any) {
-            ResponseUtil.error(res, error.message || 'Failed to get asset by id', 500);
+            ResponseUtil.error(res, error.message || 'Failed to get asset by id', 500, 'GET_ASSET_BY_ID_FAILED');
         }
     }
 
@@ -58,7 +58,7 @@ export class AssetController {
 
             ResponseUtil.success(res, null, 'Asset updated successfully');
         } catch (error: any) {
-            ResponseUtil.error(res, error.message || 'Failed to update asset', 500);
+            ResponseUtil.error(res, error.message || 'Failed to update asset', 500, 'UPDATE_ASSET_FAILED');
         }
     }
 
@@ -69,7 +69,7 @@ export class AssetController {
 
             ResponseUtil.success(res, null, 'Asset deleted successfully');
         }catch(error:any) {
-            ResponseUtil.error(res, error.message || 'Failed to delete asset', 500);
+            ResponseUtil.error(res, error.message || 'Failed to delete asset', 500, 'DELETE_ASSET_FAILED');
         }
     }
 }

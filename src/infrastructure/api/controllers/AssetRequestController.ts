@@ -9,31 +9,25 @@ export class AssetRequestController {
 
     async createAssetRequest(req: Request, res: Response) {
         try {
-            const type = req.query.type?.toString();
-            if (!type) {
-                ResponseUtil.error(res, 'Request type is required', 400);
-                return;
-            }
-
-            const departmentId = Number(req.user?.department_id);
+            const location = Number(req.body.locationId) ?? 0;
+            const assetItemCode = req.body.assetItemCode.toString();
             const userId = Number(req.user?.id);
-            if(!userId) {
-                ResponseUtil.error(res, 'User not authenticated', 401);
-                return;
-            }
+            const departmentId = Number(req.user?.department_id) ?? 0;
+            const quantity = Number(req.body.quantity) ?? 1;
             
             const input = {
-                assetItemCode: req.body.assetItemCode,
+                assetItemCode: assetItemCode,
                 departmentId: departmentId,
-                location: Number(req.body.location) ?? 0,
+                quantity: quantity,
+                location: location,
                 requesterId: userId
             };
 
-            await this.assetRequestService.createAssetRequest(input, type);
+            await this.assetRequestService.createAssetRequest(input);
             
             ResponseUtil.created(res, 'Asset request created successfully');
         } catch (error: any) {
-            ResponseUtil.error(res, ' Failed to create asset request', 500, error.message);
+            ResponseUtil.error(res, error.message || 'Failed to create asset request', 500, 'CREATE_ASSET_REQUEST_FAILED');
         }
     }
 
@@ -41,16 +35,20 @@ export class AssetRequestController {
         try {
             const userId = Number(req.user?.id);
             if(!userId) {
-                ResponseUtil.error(res, 'User not authenticated', 401);
+                ResponseUtil.error(res, 'User not authenticated', 401, 'USER_NOT_AUTHENTICATED');
                 return;
             }
             const assetItemCode = req.body.assetItemCode;
+            const input = {
+                assetItemCode: assetItemCode,
+                requesterId: userId
+            };
 
-            await this.assetRequestService.createAssetReturnRequest(userId, assetItemCode);
+            await this.assetRequestService.createAssetReturnRequest(input);
 
             ResponseUtil.created(res, 'Asset return request created successfully');
         }catch(error: any) {
-            ResponseUtil.error(res, ' Failed to create asset return request', 500, error.message);
+            ResponseUtil.error(res, error.message || 'Failed to create asset return request', 500, 'CREATE_ASSET_RETURN_REQUEST_FAILED');
         }
     }
 
@@ -73,7 +71,7 @@ export class AssetRequestController {
 
             ResponseUtil.successWithPagination(res, data, pagination, ' Asset requests retrieved successfully', 200);
         } catch (error: any) {
-            ResponseUtil.error(res, ' Failed to get asset requests', 500, error);
+            ResponseUtil.error(res, error.message || 'Failed to get asset requests', 500, 'GET_ASSET_REQUESTS_FAILED');
         }
     }
 
@@ -81,7 +79,7 @@ export class AssetRequestController {
         try {
             const userId = req.user?.id;
             if(!userId) {
-                ResponseUtil.error(res, 'User not authenticated', 401);
+                ResponseUtil.error(res, 'User not authenticated', 401, 'USER_NOT_AUTHENTICATED');
                 return;
             }
 
@@ -89,7 +87,7 @@ export class AssetRequestController {
             
             ResponseUtil.success(res, myAssets, ' My asset form request retrieved successfully', 200);
         }catch (error: any) {
-            ResponseUtil.error(res, ' Failed to get my asset form request', 500, error);
+            ResponseUtil.error(res, error.message || 'Failed to get my asset form request', 500, 'GET_MY_ASSET_FORM_REQUEST_FAILED');
         }
     }
 
@@ -97,13 +95,13 @@ export class AssetRequestController {
         try {
             const code = req.params.code?.toString();
             if (!code) {
-                ResponseUtil.error(res, 'Request code is required', 400);
+                ResponseUtil.error(res, 'Request code is required', 400, 'REQUEST_CODE_REQUIRED');
                 return;
             }
 
             const type = req.query.type?.toString();
             if (!type) {
-                ResponseUtil.error(res, 'Request type is required', 400);
+                ResponseUtil.error(res, 'Request type is required', 400, 'REQUEST_TYPE_REQUIRED');
                 return;
             }
             
@@ -111,7 +109,7 @@ export class AssetRequestController {
 
             ResponseUtil.success(res, null, 'Asset request approved successfully', 200);
         }catch (error: any) {
-            ResponseUtil.error(res, ' Failed to approve asset request', 500, error);
+            ResponseUtil.error(res, error.message || 'Failed to approve asset request', 500, 'APPROVE_ASSET_REQUEST_FAILED');
         }
     }
 
@@ -119,7 +117,7 @@ export class AssetRequestController {
         try {
             const code = req.params.code?.toString();
             if (!code) {
-                ResponseUtil.error(res, 'Request code is required', 400);
+                ResponseUtil.error(res, 'Request code is required', 400, 'REQUEST_CODE_REQUIRED');
                 return;
             }
             
@@ -127,53 +125,20 @@ export class AssetRequestController {
 
             ResponseUtil.success(res, null, 'Asset request rejected successfully', 200);
         } catch (error: any) {
-            ResponseUtil.error(res, ' Failed to reject asset request', 500, error);
-        }
-    }
-
-    async returnAssetByUserId(req: Request, res: Response) {
-        try {
-            const assetUserId = Number(req.query.id);
-            if (!assetUserId) {
-                ResponseUtil.error(res, 'Request code is required', 400);
-                return;
-            }
-
-            await this.assetRequestService.processReturn(assetUserId);
-
-            // ##### Flow Create Request ##### 
-            const type = req.query.type?.toString().toLocaleUpperCase();
-            if (!type) {
-                ResponseUtil.error(res, 'Request type is required', 400);
-                return;
-            }
-
-            const input = {
-                assetItemCode: req.body.assetItemCode ?? '',
-                departmentId: Number(req.user?.department_id) ?? 0,
-                location: req.body.location ?? '',
-                requesterId: Number(req.user?.id) ?? 0
-            };
-
-            await this.assetRequestService.createAssetRequest(input, type);
-            // ##### End Flow Create Request #####
-
-            ResponseUtil.success(res, null, 'Asset return processed successfully', 200);
-        }catch (error: any) {
-            ResponseUtil.error(res, ' Failed to process asset return', 500, error);
+            ResponseUtil.error(res, error.message || 'Failed to reject asset request', 500, 'REJECT_ASSET_REQUEST_FAILED');
         }
     }
 
     async uploadRequestImage(req: Request, res: Response) {
         try {
             if (!req.file) {
-                ResponseUtil.error(res, 'No file uploaded', 400);
+                ResponseUtil.error(res, 'No file uploaded', 400, 'NO_FILE_UPLOADED');
                 return;
             }
 
             const requestCode = req.body.requestCode;
             if (!requestCode) {
-                ResponseUtil.error(res, 'Request code is required', 400);
+                ResponseUtil.error(res, 'Request code is required', 400, 'REQUEST_CODE_REQUIRED');
                 return;
             }
 
@@ -182,7 +147,7 @@ export class AssetRequestController {
             const imageUrl = await this.assetRequestService.uploadRequestImage(file, requestCode);
             ResponseUtil.success(res, { imageUrl }, 'Request image uploaded successfully', 200);
         }catch (error: any) {
-            ResponseUtil.error(res, 'Failed to upload request image', 500, error.message);
+            ResponseUtil.error(res, error.message || 'Failed to upload request image', 500, 'UPLOAD_REQUEST_IMAGE_FAILED');
         }
     }
 }

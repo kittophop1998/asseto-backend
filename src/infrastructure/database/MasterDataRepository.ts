@@ -24,6 +24,7 @@ export class MasterDataRepository implements IMasterDataRepository {
         const locations = await db
             .selectFrom('locations')
             .selectAll()
+            .where('is_active', '=', 1)
             .execute();
 
         return locations;

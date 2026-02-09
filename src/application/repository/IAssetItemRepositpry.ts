@@ -7,4 +7,5 @@ export interface IAssetItemRepository {
     deleteItem(id: number): Promise<void>;
     getItemByAssetItemCode(assetItemCode: string): Promise<any | null>;
     updateAssetItem(assetCode: string, input: any): Promise<void>;
+    checkQtyAvailable(assetItemCode: string, quantity: number): Promise<boolean>;
 }

@@ -24,7 +24,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            ResponseUtil.unauthorized(res, 'No token provided');
+            ResponseUtil.unauthorized(res, 'No token provided', 'NO_TOKEN_PROVIDED');
             return;
         }
 
@@ -34,6 +34,6 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
 
         next();
     } catch (error: any) {
-        ResponseUtil.unauthorized(res, error.message || 'Invalid token');
+        ResponseUtil.unauthorized(res, error.message || 'Invalid token', 'INVALID_TOKEN');
     }
 };

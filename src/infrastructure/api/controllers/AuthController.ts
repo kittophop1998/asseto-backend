@@ -10,7 +10,7 @@ export class AuthController {
         try {
             const { username, password } = req.body;
             if (!username || !password) {
-                ResponseUtil.badRequest(res, 'Username and password are required');
+                ResponseUtil.badRequest(res, 'Username and password are required', 'USERNAME_PASSWORD_REQUIRED');
                 return;
             }
 
@@ -18,7 +18,7 @@ export class AuthController {
             
             ResponseUtil.success(res, result, 'Login successful');
         } catch (error: any) {
-            ResponseUtil.unauthorized(res, error.message || 'Login failed');
+            ResponseUtil.unauthorized(res, error.message || 'Login failed', 'LOGIN_FAILED');
         }
     }
 }

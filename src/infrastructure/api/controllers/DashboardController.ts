@@ -13,7 +13,7 @@ export class DashboardController {
 
             ResponseUtil.success(res, assetDashboard, ' Asset dashboard data retrieved successfully', 200);
         }catch (error: any) {
-            ResponseUtil.error(res, ' Failed to get asset dashboard data', 500, error);
+            ResponseUtil.error(res, error.message || 'Failed to get asset dashboard data', 500, 'GET_ASSET_DASHBOARD_FAILED');
         }
     }
 }

@@ -10,7 +10,7 @@ export interface IAssetRequestRepository {
     getMyAsset(id: number): Promise<any>;
     getRequestByCode(code: string): Promise<any>;
     getRequestByAssetItemCode(assetItemCode: string): Promise<any>;
-    createAssetUser(userId: number, assetItemCode: string, departmentId: number, status: string): Promise<void>;
+    createAssetUser(input: any): Promise<void>;
     updateAssetUserStatus(userId: number, assetItemCode: string, status: string): Promise<void>;
     updateAssetUserReturnDate(userId: number, assetItemCode: string): Promise<void>;
     updateAssetUserById(id: number, status: string): Promise<void>;
