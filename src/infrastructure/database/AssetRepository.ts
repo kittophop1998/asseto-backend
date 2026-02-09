@@ -53,9 +53,9 @@ export class AssetRepository implements IAssetRepository {
             'assets.status',
             'assets.department_id',
             'departments.name as department_name',
-            sql<number>`CAST(COALESCE(asset_items.quantity, 0) AS SIGNED)`.as('total_qty'),
+            sql<number>`CAST(COALESCE(SUM(asset_items.quantity), 0) AS SIGNED)`.as('total_qty'),
             sql<number>`CAST(COALESCE(SUM(asset_requests.quantity), 0) AS SIGNED)`.as('requested_qty'),
-            sql<number>`CAST(COALESCE(asset_items.quantity, 0) - COALESCE(SUM(asset_requests.quantity), 0) AS SIGNED)`.as('available_qty'),
+            sql<number>`CAST(COALESCE(SUM(asset_items.quantity), 0) - COALESCE(SUM(asset_requests.quantity), 0) AS SIGNED)`.as('available_qty'),
             'assets.created_at',
             'assets.updated_at',
         ]).groupBy('assets.id').offset(skip).limit(limit).execute();

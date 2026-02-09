@@ -125,7 +125,7 @@ export class AssetItemRepository implements IAssetItemRepository {
                 'asset_item_code as asset_code',
                 'asset_items.quantity as assetItem_quantity',
                 sql<number>`CAST(COALESCE(SUM(asset_requests.quantity), 0) AS INTEGER)`.as('assetRequest_qty'),
-                sql<number>`CAST(COALESCE(asset_items.quantity, 0) - COALESCE(SUM(asset_requests.quantity), 0) AS INTEGER)`.as('remaining_quantity'),
+                sql<number>`CAST(COALESCE(SUM(asset_items.quantity), 0) - COALESCE(SUM(asset_requests.quantity), 0) AS INTEGER)`.as('remaining_quantity'),
             ])
             .where('asset_requests.status', 'in', ['PENDING', 'APPROVED'])
             .where('asset_code', '=', assetItemCode)

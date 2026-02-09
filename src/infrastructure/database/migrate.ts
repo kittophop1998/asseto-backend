@@ -16,6 +16,7 @@ async function migrate() {
   const command = process.argv[2]
 
   if (command === 'down') {
+    // Rollback 1 migration
     const { error, results } = await migrator.migrateDown()
 
     if (error) {
@@ -23,7 +24,9 @@ async function migrate() {
       process.exit(1)
     }
 
-    if (results) {
+    if (results && results.length === 0) {
+      console.log('No migrations to rollback')
+    } else if (results) {
       results.forEach((it) => {
         if (it.status === 'Success') {
           console.log(`Rollback "${it.migrationName}" was executed successfully`)
@@ -34,6 +37,33 @@ async function migrate() {
     }
 
     console.log('Rollback completed successfully')
+  } else if (command === 'down:all') {
+    // Rollback all migrations
+    let totalRolledBack = 0
+    
+    while (true) {
+      const { error, results } = await migrator.migrateDown()
+      
+      if (error) {
+        console.error('Rollback failed', error)
+        process.exit(1)
+      }
+      
+      if (!results || results.length === 0) {
+        break
+      }
+      
+      results.forEach((it) => {
+        if (it.status === 'Success') {
+          console.log(`Rollback "${it.migrationName}" was executed successfully`)
+          totalRolledBack++
+        } else if (it.status === 'Error') {
+          console.error(`Failed to rollback migration "${it.migrationName}"`)
+        }
+      })
+    }
+    
+    console.log(`Rolled back ${totalRolledBack} migrations`)
   } else {
     const { error, results } = await migrator.migrateToLatest()
 
