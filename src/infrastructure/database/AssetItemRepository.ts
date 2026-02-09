@@ -32,6 +32,7 @@ export class AssetItemRepository implements IAssetItemRepository {
                 'asset_items.asset_code_ac as assetCodeAC',
                 'asset_items.asset_code as assetCode',
                 'asset_items.status as status',
+                'asset_items.quantity as quantity',
                 sql`DATE_FORMAT(CONVERT_TZ(asset_items.purchase_date,'+00:00','+07:00'), '%Y-%m-%d')`.as('purchaseDate'),
                 sql`DATE_FORMAT(CONVERT_TZ(asset_items.warranty_end_date,'+00:00','+07:00'), '%Y-%m-%d')`.as('warrantyEnd'),
                 sql`DATE_FORMAT(CONVERT_TZ(asset_items.created_at,'+00:00','+07:00'), '%Y-%m-%d %H:%i:%s')`.as('createdAt'),
