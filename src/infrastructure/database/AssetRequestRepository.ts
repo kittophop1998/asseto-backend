@@ -93,12 +93,12 @@ export class AssetRequestRepository implements IAssetRequestRepository {
         return lastRequest ? lastRequest.code : null;
     }
 
-    async updateStatus(code: string, status: string): Promise<void> {
+    async updateStatus(userId: number, code: string, status: string): Promise<void> {
         await db
             .updateTable('asset_requests')
             .set({
                 status: status as 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED',
-                approver_id: 1,
+                approver_id: userId,
                 approval_date: dayjs().toDate(),
                 updated_at: dayjs().toDate(),
             })

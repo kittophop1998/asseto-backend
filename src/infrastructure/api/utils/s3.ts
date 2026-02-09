@@ -28,6 +28,7 @@ export interface UploadFileParams {
   bucket?: string;
   contentType?: string;
   metadata?: Record<string, string>;
+  acl?: 'private' | 'public-read' | 'public-read-write' | 'authenticated-read';
 }
 
 export interface DownloadFileParams {
@@ -63,7 +64,7 @@ export interface CopyFileParams {
  * อัพโหลดไฟล์ไปยัง S3/MinIO
  */
 export async function uploadFile(params: UploadFileParams) {
-  const { file, key, bucket = config.s3.bucket, contentType, metadata } = params;
+  const { file, key, bucket = config.s3.bucket, contentType, metadata, acl } = params;
 
   try {
     const upload = new Upload({
@@ -74,6 +75,7 @@ export async function uploadFile(params: UploadFileParams) {
         Body: file,
         ContentType: contentType,
         Metadata: metadata,
+        ACL: acl,
       },
     });
 
@@ -303,6 +305,7 @@ export async function uploadFromMultipart(
       originalName: file.originalname,
       uploadedAt: new Date().toISOString(),
     },
+    acl: 'public-read-write',
   });
 }
 

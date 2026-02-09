@@ -48,8 +48,8 @@ export function createAssetRequestRoutes() {
     router.post('/', authMiddleware, (req, res) => assetRequestController.createAssetRequest(req, res));
     router.post('/return', authMiddleware, (req, res) => assetRequestController.createAssetReturnRequest(req, res));
     router.get('/my-requests', authMiddleware, (req, res) => assetRequestController.getMyAssetFormRequest(req, res));
-    router.put('/:code/approve', (req, res) => assetRequestController.approveRequest(req, res));
-    router.put('/:code/reject', (req, res) => assetRequestController.rejectRequest(req, res));
+    router.put('/:code/approve', authMiddleware, (req, res) => assetRequestController.approveRequest(req, res));
+    router.put('/:code/reject', authMiddleware, (req, res) => assetRequestController.rejectRequest(req, res));
     router.post('/upload', upload.single('image'), (req, res) => assetRequestController.uploadRequestImage(req, res));
     router.get('/', (req, res) => assetRequestController.getAllRequests(req, res));
 

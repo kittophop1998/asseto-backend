@@ -93,6 +93,7 @@ export class AssetRequestController {
 
     async approveRequest(req: Request, res: Response) {
         try {
+            const userId = Number(req.user?.id);
             const code = req.params.code?.toString();
             if (!code) {
                 ResponseUtil.error(res, 'Request code is required', 400, 'REQUEST_CODE_REQUIRED');
@@ -105,7 +106,7 @@ export class AssetRequestController {
                 return;
             }
             
-            await this.assetRequestService.approveAssetRequest(code, type);
+            await this.assetRequestService.approveAssetRequest(userId, code, type);
 
             ResponseUtil.success(res, null, 'Asset request approved successfully', 200);
         }catch (error: any) {
@@ -115,13 +116,14 @@ export class AssetRequestController {
 
     async rejectRequest(req: Request, res: Response) {
         try {
+            const userId = Number(req.user?.id);
             const code = req.params.code?.toString();
             if (!code) {
                 ResponseUtil.error(res, 'Request code is required', 400, 'REQUEST_CODE_REQUIRED');
                 return;
             }
             
-            await this.assetRequestService.rejectAssetRequest(code);
+            await this.assetRequestService.rejectAssetRequest(userId, code);
 
             ResponseUtil.success(res, null, 'Asset request rejected successfully', 200);
         } catch (error: any) {

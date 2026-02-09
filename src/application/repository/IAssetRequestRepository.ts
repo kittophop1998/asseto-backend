@@ -3,8 +3,9 @@ export interface IAssetRequestRepository {
     create(input: any): Promise<any>;
     getLastRequestCode(): Promise<string | null>;
     updateStatus(
+        userId: number,
         code: string,
-        status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'FULFILLED' | 'CANCELLED'
+        status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED'
     ): Promise<void>;
     getListRequestDetail(): Promise<any>;
     getMyAsset(id: number): Promise<any>;

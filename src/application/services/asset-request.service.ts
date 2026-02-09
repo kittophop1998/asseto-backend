@@ -117,7 +117,7 @@ export class AssetRequestService {
         return requests;
     }
 
-    async approveAssetRequest(code: string, type: string): Promise<void> {
+    async approveAssetRequest(userId: number, code: string, type: string): Promise<void> {
         const request = await this.assetRequestRepository.getRequestByCode(code);
         if (!request) {
             throw new Error('Asset request not found');
@@ -132,16 +132,16 @@ export class AssetRequestService {
             await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.asset_item_code, 'APPROVED');
             await this.assetItemRepository.updateAssetItem(assetItem.assetCode.toString(), {status: 'IN_USE'});
             await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.asset_item_code, 'APPROVED');
-            await this.assetRequestRepository.updateStatus(code, 'APPROVED');
+            await this.assetRequestRepository.updateStatus(userId, code, 'APPROVED');
         } else if (type === 'RETURN') {
             await this.assetRequestRepository.updateAssetUserReturnDate(request.requester_id, request.asset_item_code);
             await this.assetItemRepository.updateAssetItem(assetItem.assetCode.toString(), {status: 'AVAILABLE'});
             await this.assetRequestRepository.updateAssetUserStatus(request.requester_id, request.asset_item_code, 'RETURNED');
-            await this.assetRequestRepository.updateStatus(code, 'APPROVED');
+            await this.assetRequestRepository.updateStatus(userId, code, 'APPROVED');
         }
     }
 
-    async rejectAssetRequest(code: string): Promise<void> {
+    async rejectAssetRequest(userId: number, code: string): Promise<void> {
         const request = await this.assetRequestRepository.getRequestByCode(code);
         if (!request) {
             throw new Error('Asset request not found');
@@ -152,7 +152,7 @@ export class AssetRequestService {
             throw new Error('Asset item not found');
         }
 
-        await this.assetRequestRepository.updateStatus(code, 'REJECTED');
+        await this.assetRequestRepository.updateStatus(userId, code, 'REJECTED');
     }
 
     private generateAssetRequestCode(prefix: string, lastNumber: number, length: number = 4): string {
