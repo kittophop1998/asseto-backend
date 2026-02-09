@@ -6,301 +6,180 @@ async function seed() {
 
     // Seed Categories
     console.log('Seeding categories...')
-    const categoryCountResult = await db
-      .selectFrom('categories')
-      .select(db.fn.count<number>('id').as('count'))
-      .executeTakeFirst()
-    const categoryCount = categoryCountResult ? Number(categoryCountResult.count) : 0
+    const categoriesData = [
+      {
+        name: 'อุปกรณ์ไอที',
+        prefix: 'IT',
+        description: 'อุปกรณ์คอมพิวเตอร์และอุปกรณ์ประกอบ เช่น เมาส์ คีย์บอร์ด จอภาพ',
+      },
+      {
+        name: 'ซอฟต์แวร์',
+        prefix: 'SW',
+        description: 'โปรแกรมและแอปพลิเคชันต่างๆ ที่ใช้ในองค์กร',
+      },
+      {
+        name: 'เครื่องใช้สำนักงาน',
+        prefix: 'OF',
+        description: 'อุปกรณ์สำนักงานทั่วไป เช่น เครื่องพิมพ์ เครื่องสแกน',
+      },
+      {
+        name: 'เบิกใช้แล้วหมดไป',
+        prefix: 'OUT',
+        description: 'วัสดุสิ้นเปลืองที่ใช้แล้วหมดไป เช่น กระดาษ ปากกา หมึกพิมพ์',
+      }
+    ]
 
-    if (categoryCount === 0) {
-      await db
-        .insertInto('categories')
-        .values([
-          {
-            name: 'อุปกรณ์ไอที',
-            prefix: 'IT',
-            description: 'อุปกรณ์คอมพิวเตอร์และอุปกรณ์ประกอบ เช่น เมาส์ คีย์บอร์ด จอภาพ',
-            updated_at: new Date(),
-          },
-          {
-            name: 'ซอฟต์แวร์',
-            prefix: 'SW',
-            description: 'โปรแกรมและแอปพลิเคชันต่างๆ ที่ใช้ในองค์กร',
-            updated_at: new Date(),
-          },
-          {
-            name: 'เครื่องใช้สำนักงาน',
-            prefix: 'OF',
-            description: 'อุปกรณ์สำนักงานทั่วไป เช่น เครื่องพิมพ์ เครื่องสแกน',
-            updated_at: new Date(),
-          },
-          {
-            name: 'เบิกใช้แล้วหมดไป',
-            prefix: 'OUT',
-            description: 'วัสดุสิ้นเปลืองที่ใช้แล้วหมดไป เช่น กระดาษ ปากกา หมึกพิมพ์',
-            updated_at: new Date(),
-          }
-        ])
-        .execute()
-
-      const categories = await db
+    let categoriesInserted = 0
+    for (const category of categoriesData) {
+      const existing = await db
         .selectFrom('categories')
-        .selectAll()
-        .execute()
+        .select('id')
+        .where('prefix', '=', category.prefix)
+        .executeTakeFirst()
 
-      console.log(`✓ Seeded ${categories.length} categories`)
-    } else {
-      console.log(`↷ Skipped categories (already ${categoryCount} records)`)
+      if (!existing) {
+        await db
+          .insertInto('categories')
+          .values({
+            ...category,
+            updated_at: new Date(),
+          })
+          .execute()
+        categoriesInserted++
+      }
     }
+    console.log(`✓ Categories: ${categoriesInserted} inserted, ${categoriesData.length - categoriesInserted} already existed`)
 
     // Seed Departments
     console.log('Seeding departments...')
-    const departmentCountResult = await db
-      .selectFrom('departments')
-      .select(db.fn.count<number>('id').as('count'))
-      .executeTakeFirst()
-    const departmentCount = departmentCountResult ? Number(departmentCountResult.count) : 0
+    const departmentsData: Array<{ code: string; name: string; type: 'BACKOFFICE' | 'BRANCH' }> = [
+      {
+        code: 'HQ-001',
+        name: 'ฝ่ายบริหาร',
+        type: 'BACKOFFICE',
+      },
+      {
+        code: 'HQ-002',
+        name: 'ฝ่ายบัญชีและการเงิน',
+        type: 'BACKOFFICE',
+      },
+      {
+        code: 'HQ-003',
+        name: 'ฝ่ายทรัพยากรบุคคล',
+        type: 'BACKOFFICE',
+      },
+      {
+        code: 'HQ-004',
+        name: 'ฝ่ายเทคโนโลยีสารสนเทศ',
+        type: 'BACKOFFICE',
+      },
+      {
+        code: 'HQ-005',
+        name: 'ฝ่ายการตลาด',
+        type: 'BACKOFFICE',
+      },
+      {
+        code: 'BR-001',
+        name: 'สาขากรุงเทพ',
+        type: 'BRANCH',
+      },
+      {
+        code: 'BR-002',
+        name: 'สาขาเชียงใหม่',
+        type: 'BRANCH',
+      },
+      {
+        code: 'BR-003',
+        name: 'สาขาภูเก็ต',
+        type: 'BRANCH',
+      },
+      {
+        code: 'BR-004',
+        name: 'สาขาขอนแก่น',
+        type: 'BRANCH',
+      },
+      {
+        code: 'BR-005',
+        name: 'สาขาหาดใหญ่',
+        type: 'BRANCH',
+      },
+    ]
 
-    if (departmentCount === 0) {
-      await db
-        .insertInto('departments')
-        .values([
-          {
-            code: 'HQ-001',
-            name: 'ฝ่ายบริหาร',
-            type: 'BACKOFFICE',
-            updated_at: new Date(),
-          },
-          {
-            code: 'HQ-002',
-            name: 'ฝ่ายบัญชีและการเงิน',
-            type: 'BACKOFFICE',
-            updated_at: new Date(),
-          },
-          {
-            code: 'HQ-003',
-            name: 'ฝ่ายทรัพยากรบุคคล',
-            type: 'BACKOFFICE',
-            updated_at: new Date(),
-          },
-          {
-            code: 'HQ-004',
-            name: 'ฝ่ายเทคโนโลยีสารสนเทศ',
-            type: 'BACKOFFICE',
-            updated_at: new Date(),
-          },
-          {
-            code: 'HQ-005',
-            name: 'ฝ่ายการตลาด',
-            type: 'BACKOFFICE',
-            updated_at: new Date(),
-          },
-          {
-            code: 'BR-001',
-            name: 'สาขากรุงเทพ',
-            type: 'BRANCH',
-            updated_at: new Date(),
-          },
-          {
-            code: 'BR-002',
-            name: 'สาขาเชียงใหม่',
-            type: 'BRANCH',
-            updated_at: new Date(),
-          },
-          {
-            code: 'BR-003',
-            name: 'สาขาภูเก็ต',
-            type: 'BRANCH',
-            updated_at: new Date(),
-          },
-          {
-            code: 'BR-004',
-            name: 'สาขาขอนแก่น',
-            type: 'BRANCH',
-            updated_at: new Date(),
-          },
-          {
-            code: 'BR-005',
-            name: 'สาขาหาดใหญ่',
-            type: 'BRANCH',
-            updated_at: new Date(),
-          },
-        ])
-        .execute()
-
-      const departments = await db
+    let departmentsInserted = 0
+    for (const department of departmentsData) {
+      const existing = await db
         .selectFrom('departments')
-        .selectAll()
-        .execute()
+        .select('id')
+        .where('code', '=', department.code)
+        .executeTakeFirst()
 
-      console.log(`✓ Seeded ${departments.length} departments`)
-    } else {
-      console.log(`↷ Skipped departments (already ${departmentCount} records)`)
+      if (!existing) {
+        await db
+          .insertInto('departments')
+          .values({
+            ...department,
+            updated_at: new Date(),
+          })
+          .execute()
+        departmentsInserted++
+      }
     }
+    console.log(`✓ Departments: ${departmentsInserted} inserted, ${departmentsData.length - departmentsInserted} already existed`)
 
     // Seed Locations
     console.log('Seeding locations...')
-    const locationCountResult = await db
-      .selectFrom('locations')
-      .select(db.fn.count<number>('id').as('count'))
-      .executeTakeFirst()
-    const locationCount = locationCountResult ? Number(locationCountResult.count) : 0
+    const locationsData = [
+      { name: "Main store (โกดัง 40)", description: "Main store (โกดัง 40)" },
+      { name: "ONLINE (STO)", description: "ONLINE (STO)" },
+      { name: "100 Baht Shop (JJ1)", description: "100 Baht Shop (JJ1)" },
+      { name: "100 Baht Shop (JJ2)", description: "100 Baht Shop (JJ2)" },
+      { name: "Checkin Lowprice (CL)", description: "Checkin Lowprice (CL)" },
+      { name: "100 Baht Shop (PTN)", description: "100 Baht Shop (PTN)" },
+      { name: "100 Baht Shop (KB)", description: "100 Baht Shop (KB)" },
+      { name: "100 Baht Shop (CBR)", description: "100 Baht Shop (CBR)" },
+      { name: "ศรีฟ้า", description: "ศรีฟ้า" },
+      { name: "100BAHTSHOP (SAMUI)", description: "100BAHTSHOP (SAMUI)" },
+      { name: "DRUG CENTER SAMUI", description: "DRUG CENTER SAMUI" },
+      { name: "100 Baht Shop (MPN)", description: "100 Baht Shop (MPN)" },
+      { name: "_DEMO หน้าร้าน", description: "_DEMO หน้าร้าน" },
+      { name: "100 Baht Shop (JJ3)", description: "100 Baht Shop (JJ3)" },
+      { name: "100 Baht Shop (JJ5)", description: "100 Baht Shop (JJ5)" },
+      { name: "_DEMO คลังใหญ่", description: "_DEMO คลังใหญ่" },
+      { name: "Chemist Pharmacy (CMP)", description: "Chemist Pharmacy (CMP)" },
+      { name: "สำนักงานใหญ่", description: "สำนักงานใหญ่" },
+      { name: "ราคาแนะนำขาย Sticker price", description: "ราคาแนะนำขาย Sticker price" },
+      { name: "100 Baht Shop (JJ8)", description: "100 Baht Shop (JJ8)" },
+      { name: "ห้องผลิตสินค้า OTOP", description: "ห้องผลิตสินค้า OTOP" },
+      { name: "โกดังคืนสินค้า", description: "โกดังคืนสินค้า" },
+      { name: "100 Baht Shop (JF1)", description: "100 Baht Shop (JF1)" },
+      { name: "100 Baht Shop (ITS)", description: "100 Baht Shop (ITS)" },
+      { name: "Chemist Pharmacy (SBY)", description: "Chemist Pharmacy (SBY)" },
+      { name: "100 Baht Shop (MPN2)", description: "100 Baht Shop (MPN2)" },
+      { name: "100 Baht Shop (SPL)", description: "100 Baht Shop (SPL)" },
+      { name: "100 Baht Shop (JJP)", description: "100 Baht Shop (JJP)" },
+      { name: "100 Baht Shop (SSK)", description: "100 Baht Shop (SSK)" },
+    ]
 
-    if (locationCount === 0) {
-      await db
-        .insertInto('locations')
-        .values([
-          {
-            "name": "Main store (โกดัง 40)",
-            "description": "Main store (โกดัง 40)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "ONLINE (STO)",
-            "description": "ONLINE (STO)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (JJ1)",
-            "description": "100 Baht Shop (JJ1)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (JJ2)",
-            "description": "100 Baht Shop (JJ2)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "Checkin Lowprice (CL)",
-            "description": "Checkin Lowprice (CL)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (PTN)",
-            "description": "100 Baht Shop (PTN)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (KB)",
-            "description": "100 Baht Shop (KB)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (CBR)",
-            "description": "100 Baht Shop (CBR)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "ศรีฟ้า",
-            "description": "ศรีฟ้า",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100BAHTSHOP (SAMUI)",
-            "description": "100BAHTSHOP (SAMUI)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "DRUG CENTER SAMUI",
-            "description": "DRUG CENTER SAMUI",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (MPN)",
-            "description": "100 Baht Shop (MPN)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "_DEMO หน้าร้าน",
-            "description": "_DEMO หน้าร้าน",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (JJ3)",
-            "description": "100 Baht Shop (JJ3)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (JJ5)",
-            "description": "100 Baht Shop (JJ5)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "_DEMO คลังใหญ่",
-            "description": "_DEMO คลังใหญ่",
-            "updated_at": new Date()
-          },
-          {
-            "name": "Chemist Pharmacy (CMP)",
-            "description": "Chemist Pharmacy (CMP)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "สำนักงานใหญ่",
-            "description": "สำนักงานใหญ่",
-            "updated_at": new Date()
-          },
-          {
-            "name": "ราคาแนะนำขาย Sticker price",
-            "description": "ราคาแนะนำขาย Sticker price",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (JJ8)",
-            "description": "100 Baht Shop (JJ8)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "ห้องผลิตสินค้า OTOP",
-            "description": "ห้องผลิตสินค้า OTOP",
-            "updated_at": new Date()
-          },
-          {
-            "name": "โกดังคืนสินค้า",
-            "description": "โกดังคืนสินค้า",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (JF1)",
-            "description": "100 Baht Shop (JF1)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (ITS)",
-            "description": "100 Baht Shop (ITS)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "Chemist Pharmacy (SBY)",
-            "description": "Chemist Pharmacy (SBY)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (MPN2)",
-            "description": "100 Baht Shop (MPN2)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (SPL)",
-            "description": "100 Baht Shop (SPL)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (JJP)",
-            "description": "100 Baht Shop (JJP)",
-            "updated_at": new Date()
-          },
-          {
-            "name": "100 Baht Shop (SSK)",
-            "description": "100 Baht Shop (SSK)",
-            "updated_at": new Date()
-          }
-        ])
-        .execute()
-      console.log('✓ Seeded locations')
-    } else {
-      console.log(`↷ Skipped locations (already ${locationCount} records)`)
+    let locationsInserted = 0
+    for (const location of locationsData) {
+      const existing = await db
+        .selectFrom('locations')
+        .select('id')
+        .where('name', '=', location.name)
+        .executeTakeFirst()
+
+      if (!existing) {
+        await db
+          .insertInto('locations')
+          .values({
+            ...location,
+            updated_at: new Date(),
+          })
+          .execute()
+        locationsInserted++
+      }
     }
+    console.log(`✓ Locations: ${locationsInserted} inserted, ${locationsData.length - locationsInserted} already existed`)
 
     console.log('Database seeding completed successfully! ✓')
   } catch (error) {
